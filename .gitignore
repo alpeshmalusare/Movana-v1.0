@@ -11,3 +11,9 @@ ios/Flutter/ephemeral/
 *.iml
 firebase-admin.json
 .env
+.env.*
+*.env
+credentials.json
+*.pem
+*.key
+.credentials
