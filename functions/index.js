@@ -8,6 +8,75 @@ const db = admin.firestore();
 
 const tmdb = axios.create({ baseURL: 'https://api.themoviedb.org/3', timeout: 12000 });
 
+const allowedPathPatterns = [
+  /^\/trending\/(movie|tv|all)\/(day|week)$/,
+  /^\/movie\/(popular|top_rated|now_playing|upcoming)$/,
+  /^\/tv\/(popular|top_rated|on_the_air)$/,
+  /^\/genre\/(movie|tv)\/list$/,
+  /^\/search\/(movie|tv|person|multi)$/,
+  /^\/movie\/\d+$/,
+  /^\/tv\/\d+$/,
+  /^\/movie\/\d+\/(credits|recommendations|videos|watch\/providers)$/,
+  /^\/tv\/\d+\/(credits|recommendations|videos|watch\/providers)$/,
+];
+
+const allowedQueryKeys = new Set([
+  'language',
+  'region',
+  'page',
+  'query',
+  'year',
+  'primary_release_year',
+  'first_air_date_year',
+  'include_adult',
+  'append_to_response',
+]);
+
+const rateWindowMs = 60 * 1000;
+const maxRequestsPerWindow = 60;
+const requestCounts = new Map();
+
+function isAllowedPath(path) {
+  return allowedPathPatterns.some((pattern) => pattern.test(path));
+}
+
+function sanitizeQuery(query) {
+  const sanitized = {};
+  for (const [key, value] of Object.entries(query)) {
+    if (allowedQueryKeys.has(key) && typeof value !== 'object') sanitized[key] = value;
+  }
+  sanitized.language = sanitized.language || 'en-IN';
+  sanitized.region = sanitized.region || 'IN';
+  return sanitized;
+}
+
+function assertAppAccess(req) {
+  const expectedSecret = process.env.MOVANA_PROXY_SECRET;
+  if (!expectedSecret) return;
+  if (req.get('x-movana-proxy-secret') !== expectedSecret) {
+    const error = new Error('Unauthorized proxy access');
+    error.status = 401;
+    throw error;
+  }
+}
+
+function assertRateLimit(req) {
+  const now = Date.now();
+  const key = req.ip || req.get('x-forwarded-for') || 'anonymous';
+  const current = requestCounts.get(key) || { count: 0, resetAt: now + rateWindowMs };
+  if (now > current.resetAt) {
+    requestCounts.set(key, { count: 1, resetAt: now + rateWindowMs });
+    return;
+  }
+  if (current.count >= maxRequestsPerWindow) {
+    const error = new Error('TMDB proxy rate limit exceeded');
+    error.status = 429;
+    throw error;
+  }
+  current.count += 1;
+  requestCounts.set(key, current);
+}
+
 async function tmdbGet(path, params = {}) {
   const token = process.env.TMDB_ACCESS_TOKEN;
   if (!token) throw new Error('TMDB_ACCESS_TOKEN is not configured');
@@ -42,14 +111,18 @@ exports.refreshMovieMetadata = onSchedule('every 24 hours', async () => {
 
 exports.tmdbProxy = onRequest(async (req, res) => {
   try {
+    assertAppAccess(req);
+    assertRateLimit(req);
     const path = req.query.path;
-    if (!path || typeof path !== 'string' || !path.startsWith('/')) {
-      res.status(400).json({ error: 'Valid path query is required' });
+    if (!path || typeof path !== 'string' || !isAllowedPath(path)) {
+      res.status(400).json({ error: 'Unsupported TMDB endpoint' });
       return;
     }
-    const data = await tmdbGet(path, req.query);
+    const data = await tmdbGet(path, sanitizeQuery(req.query));
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=600');
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    const status = error.status || 500;
+    res.status(status).json({ error: status === 500 ? 'TMDB proxy request failed' : error.message });
   }
 });

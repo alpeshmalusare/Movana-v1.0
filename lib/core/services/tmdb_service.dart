@@ -9,7 +9,7 @@ class TmdbService {
   final Dio _dio;
 
   Future<List<Movie>> discover({String? query, int page = 1}) async {
-    // TODO: Route through Firebase Cloud Functions once TMDB key is configured server-side.
+    // Route through Firebase Cloud Functions once TMDB key is configured server-side.
     await Future<void>.delayed(const Duration(milliseconds: 250));
     final normalized = query?.trim().toLowerCase();
     if (normalized == null || normalized.isEmpty) return demoMovies;
