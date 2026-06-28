@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../data/demo/demo_movies.dart';
 import '../../core/services/library_service.dart';
 import '../../core/theme/movana_theme.dart';
+import '../home/discovery_controller.dart';
 import 'widgets/movie_card.dart';
 
 class MovieDetailsScreen extends ConsumerWidget {
@@ -14,11 +14,16 @@ class MovieDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final movie = demoMovies.firstWhere((item) => item.id == movieId, orElse: () => demoMovies.first);
+    final movieAsync = ref.watch(tmdbMovieDetailsProvider(movieId));
+    return movieAsync.when(
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator(key: ValueKey('details-loading')))),
+      error: (_, __) => const Scaffold(body: Center(child: Text('Unable to load movie details', key: ValueKey('details-error')))),
+      data: (movie) {
     final library = ref.watch(libraryProvider);
     final watched = library.watched.contains(movie.id);
     final saved = library.watchlist.contains(movie.id);
-    final similar = demoMovies.where((item) => item.id != movie.id).take(2).toList();
+    final similarAsync = ref.watch(liveMoviesProvider);
+    final similar = similarAsync.valueOrNull?.where((item) => item.id != movie.id).take(2).toList() ?? const [];
     return Scaffold(
       body: CustomScrollView(
         key: ValueKey('movie-details-${movie.id}'),
@@ -81,6 +86,8 @@ class MovieDetailsScreen extends ConsumerWidget {
           ),
         ],
       ),
+    );
+      },
     );
   }
 }

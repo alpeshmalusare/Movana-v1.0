@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/models/movie.dart';
-import '../../data/demo/demo_movies.dart';
+import '../../core/services/tmdb_service.dart';
 
 class DiscoveryState {
   const DiscoveryState({
@@ -69,9 +69,22 @@ class DiscoveryController extends StateNotifier<DiscoveryState> {
 
 final discoveryProvider = StateNotifierProvider<DiscoveryController, DiscoveryState>((ref) => DiscoveryController());
 
-final filteredMoviesProvider = Provider<List<Movie>>((ref) {
+final tmdbServiceProvider = Provider<TmdbService>((ref) => TmdbService());
+
+final liveMoviesProvider = FutureProvider<List<Movie>>((ref) async {
   final state = ref.watch(discoveryProvider);
-  Iterable<Movie> movies = demoMovies;
+  return ref.watch(tmdbServiceProvider).discover(query: state.query, page: 1);
+});
+
+final tmdbMovieDetailsProvider = FutureProvider.family<Movie, String>((ref, movieId) async {
+  final movie = await ref.watch(tmdbServiceProvider).details(movieId);
+  if (movie == null) throw StateError('Movie not found');
+  return movie;
+});
+
+final filteredMoviesProvider = FutureProvider<List<Movie>>((ref) async {
+  final state = ref.watch(discoveryProvider);
+  Iterable<Movie> movies = await ref.watch(liveMoviesProvider.future);
 
   final query = state.query.trim().toLowerCase();
   if (query.isNotEmpty) {

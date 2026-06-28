@@ -11,7 +11,7 @@ Movana is a premium dark-themed Flutter app for discovering highly rated movies 
 - Live Firebase Authentication with Google Sign-In and Anonymous guest sign-in.
 - Watchlist and My Theatre state, share actions, statistics, admin dashboard skeleton.
 - Firebase configuration: Android/iOS options, Firestore rules, Storage rules, Analytics, Crashlytics, FCM, and Cloud Functions in `asia-south1`.
-- TMDB service layer routes through Firebase Cloud Functions with demo fallback data if TMDB server credentials are not configured.
+- TMDB service layer routes through server-side proxy/Cloud Functions; the TMDB token is stored server-side only and is never exposed in Flutter.
 - AdMob-ready service with official test ad IDs.
 
 ## Required Setup
@@ -22,7 +22,7 @@ Movana is a premium dark-themed Flutter app for discovering highly rated movies 
    - Android is configured with `android/app/google-services.json` for package `app.movana.discovery`.
    - iOS is configured with `ios/Runner/GoogleService-Info.plist` for bundle `app.movana.discovery`.
 4. Configure Firebase Auth, Firestore, Storage, Analytics, Crashlytics, Messaging, and AdMob in Firebase Console.
-5. Store TMDB credentials securely for Cloud Functions using `TMDB_ACCESS_TOKEN`; do not place TMDB secrets in the client app.
+5. Store TMDB credentials securely for Cloud Functions using `TMDB_ACCESS_TOKEN`; do not place TMDB secrets in the client app. For local preview, set `TMDB_ACCESS_TOKEN` in `/app/backend/.env`.
 6. Run the app with `flutter run`.
 
 ## Firebase Cloud Functions
@@ -35,4 +35,4 @@ Functions live in `/functions`:
 ## Notes
 
 - IMDb scraping is intentionally not used. The app currently uses TMDB-style ratings and keeps the rating provider swappable.
-- Demo content remains available as a fallback while live TMDB/Firestore data is populated.
+- Live TMDB powers trending, popular, top-rated, now playing, upcoming, search, details, credits, trailers, and watch providers.

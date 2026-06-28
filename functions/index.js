@@ -17,6 +17,7 @@ const allowedPathPatterns = [
   /^\/movie\/\d+$/,
   /^\/tv\/\d+$/,
   /^\/movie\/\d+\/(credits|recommendations|videos|watch\/providers)$/,
+  /^\/movie\/\d+\/(release_dates)$/,
   /^\/tv\/\d+\/(credits|recommendations|videos|watch\/providers)$/,
 ];
 

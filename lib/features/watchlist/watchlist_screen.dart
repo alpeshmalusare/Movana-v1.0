@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/services/library_service.dart';
-import '../../data/demo/demo_movies.dart';
+import '../home/discovery_controller.dart';
 import '../movies/widgets/movie_card.dart';
 
 class WatchlistScreen extends ConsumerWidget {
@@ -11,7 +11,8 @@ class WatchlistScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ids = ref.watch(libraryProvider).watchlist;
-    final movies = demoMovies.where((movie) => ids.contains(movie.id)).toList();
+    final liveMovies = ref.watch(liveMoviesProvider).valueOrNull ?? const [];
+    final movies = liveMovies.where((movie) => ids.contains(movie.id)).toList();
     return SafeArea(
       child: ListView(
         key: const ValueKey('watchlist-screen'),

@@ -10,21 +10,25 @@ class MovieListingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final movies = ref.watch(filteredMoviesProvider);
+    final moviesAsync = ref.watch(filteredMoviesProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Movie & Series Listing', key: ValueKey('listing-title'))),
-      body: movies.isEmpty
-          ? const Center(child: Text('Streaming Information Not Available', key: ValueKey('listing-empty-message')))
-          : ListView.builder(
-              key: const ValueKey('movie-listing-list'),
-              padding: const EdgeInsets.all(20),
-              itemCount: movies.length + (movies.length ~/ 8),
-              itemBuilder: (context, index) {
-                if (index > 0 && index % 9 == 8) return const _NativeAdPlaceholder();
-                final movieIndex = index - (index ~/ 9);
-                return MovieCard(movie: movies[movieIndex]);
-              },
-            ),
+      body: moviesAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator(key: ValueKey('listing-loading'))),
+        error: (_, __) => const Center(child: Text('Unable to load live TMDB data', key: ValueKey('listing-error-message'))),
+        data: (movies) => movies.isEmpty
+            ? const Center(child: Text('Streaming Information Not Available', key: ValueKey('listing-empty-message')))
+            : ListView.builder(
+                key: const ValueKey('movie-listing-list'),
+                padding: const EdgeInsets.all(20),
+                itemCount: movies.length + (movies.length ~/ 8),
+                itemBuilder: (context, index) {
+                  if (index > 0 && index % 9 == 8) return const _NativeAdPlaceholder();
+                  final movieIndex = index - (index ~/ 9);
+                  return MovieCard(movie: movies[movieIndex]);
+                },
+              ),
+      ),
     );
   }
 }

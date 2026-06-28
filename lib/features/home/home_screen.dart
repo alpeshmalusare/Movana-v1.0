@@ -17,7 +17,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider);
-    final movies = ref.watch(filteredMoviesProvider);
+    final moviesAsync = ref.watch(filteredMoviesProvider);
     final discovery = ref.watch(discoveryProvider);
     return SafeArea(
       child: CustomScrollView(
@@ -95,16 +95,21 @@ class HomeScreen extends ConsumerWidget {
               ),
             ]),
           ),
-          if (movies.isEmpty)
-            const SliverFillRemaining(child: Center(child: Text('Streaming Information Not Available', key: ValueKey('empty-results-message'))))
-          else
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-              sliver: SliverList.builder(
-                itemCount: movies.take(4).length,
-                itemBuilder: (_, index) => MovieCard(movie: movies[index]),
-              ),
-            ),
+          ...moviesAsync.when(
+            loading: () => const [SliverFillRemaining(child: Center(child: CircularProgressIndicator(key: ValueKey('tmdb-loading-indicator'))))],
+            error: (error, _) => [SliverFillRemaining(child: Center(child: Text('Unable to load live TMDB data', key: const ValueKey('tmdb-error-message'), style: const TextStyle(color: MovanaColors.textSecondary))))],
+            data: (movies) => movies.isEmpty
+                ? const [SliverFillRemaining(child: Center(child: Text('Streaming Information Not Available', key: ValueKey('empty-results-message'))))]
+                : [
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                      sliver: SliverList.builder(
+                        itemCount: movies.take(4).length,
+                        itemBuilder: (_, index) => MovieCard(movie: movies[index]),
+                      ),
+                    ),
+                  ],
+          ),
         ],
       ),
     );

@@ -5,7 +5,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_assets.dart';
 import '../../core/services/library_service.dart';
 import '../../core/theme/movana_theme.dart';
-import '../../data/demo/demo_movies.dart';
+import '../home/discovery_controller.dart';
 
 class MyTheatreScreen extends ConsumerWidget {
   const MyTheatreScreen({super.key});
@@ -13,7 +13,8 @@ class MyTheatreScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final watchedIds = ref.watch(libraryProvider).watched;
-    final watched = demoMovies.where((movie) => watchedIds.contains(movie.id)).toList();
+    final liveMovies = ref.watch(liveMoviesProvider).valueOrNull ?? const [];
+    final watched = liveMovies.where((movie) => watchedIds.contains(movie.id)).toList();
     final hours = watched.fold<int>(0, (sum, movie) => sum + movie.runtimeMinutes) ~/ 60;
     final avg = watched.isEmpty ? 0.0 : watched.map((e) => e.rating).reduce((a, b) => a + b) / watched.length;
     return SafeArea(

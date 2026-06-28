@@ -6,7 +6,7 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 ## User Choices
 - Build target: Flutter Android/iOS app structure.
 - Firebase: Android and iOS Firebase config added; live Auth/Firestore/Storage/Messaging/Analytics/Crashlytics/Functions integration implemented.
-- TMDB: user will provide API key later.
+- TMDB: live v4 token provided and stored server-side in `/app/backend/.env`; Cloud Functions should use `TMDB_ACCESS_TOKEN` environment variable.
 - First deliverable: full architecture skeleton with key screens working first.
 - Auth: live Anonymous guest mode and live Google Sign-In.
 
@@ -14,7 +14,7 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 - Flutter + Riverpod + GoRouter + Material 3 dark-only theme.
 - Clean modular structure under `lib/core`, `lib/data`, and `lib/features`.
 - Firebase initialization uses `firebase_options.dart` generated from Android/iOS config values.
-- TMDB calls are designed to move through hardened Cloud Functions proxy, keeping secrets off the client.
+- TMDB calls move through server-side backend/Cloud Functions proxy, keeping secrets out of Flutter and browser clients.
 - Ratings use a provider abstraction so TMDB can later be swapped with licensed IMDb-compatible data.
 - Watchlist/My Theatre use live Firestore for signed-in Google users; anonymous guests are blocked from saving as required.
 - AdMob uses official test IDs and should later read production IDs from Firebase Remote Config.
@@ -34,6 +34,7 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 - `firebase_options.dart` added and Firebase Auth, Firestore, Storage, Cloud Messaging, Analytics, Crashlytics, and Functions services are live.
 - iOS Google Sign-In callback configured via `CFBundleURLTypes` using `REVERSED_CLIENT_ID`.
 - Firestore rules deny anonymous writes to `watchlist` and `watched`, matching the guest-mode product rule.
+- Live TMDB connected for trending, popular, top-rated, now playing, upcoming, search, posters/backdrops, genres, ratings, runtime, overview, cast, trailers, and Indian watch providers where available.
 
 ## Validation
 - Flutter/Dart SDK is not installed in the container, so runtime `flutter analyze` and `flutter test` could not run here.
@@ -43,7 +44,7 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 ## Prioritized Backlog
 ### P0
 - Confirm Firebase Console providers are enabled: Google Sign-In, Anonymous Auth, Firestore, Storage, Analytics, Crashlytics, FCM, Functions, and AdMob.
-- Add TMDB access token to Cloud Functions environment and connect Flutter service to proxy.
+- Add `TMDB_ACCESS_TOKEN` to deployed Firebase Cloud Functions environment before publishing mobile builds.
 - Run `flutter pub get`, `flutter analyze`, and `flutter test` in a Flutter environment.
 - Replace in-memory library state with Firestore-backed user watchlist/watched repositories.
 
