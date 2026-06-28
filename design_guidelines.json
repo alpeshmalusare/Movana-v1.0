@@ -1,0 +1,138 @@
+{
+  "project_name": "Movana",
+  "theme_archetype": "Archetype 5: Luxury (Premium, Cinematic & Moody Dark Mode)",
+  "color_palette": {
+    "background": "#0D0D0D",
+    "card_background": "#181818",
+    "accent_primary": "#F5C518",
+    "watchlist_active": "#FF3B5C",
+    "text_primary": "#FFFFFF",
+    "text_secondary": "#B5B5B5",
+    "overlay": "rgba(0, 0, 0, 0.6)",
+    "divider": "rgba(255, 255, 255, 0.08)",
+    "glass_background": "rgba(24, 24, 24, 0.75)"
+  },
+  "typography": {
+    "font_family_headings": "Outfit, sans-serif",
+    "font_family_body": "DM Sans, sans-serif",
+    "scales": {
+      "h1": {
+        "size": "32px",
+        "weight": "800",
+        "tracking": "-0.02em",
+        "description": "App bar titles, large screen headers"
+      },
+      "h2": {
+        "size": "24px",
+        "weight": "700",
+        "tracking": "-0.01em",
+        "description": "Section headers, major card titles"
+      },
+      "h3": {
+        "size": "18px",
+        "weight": "600",
+        "tracking": "normal",
+        "description": "Standard card titles, bottom nav labels"
+      },
+      "body": {
+        "size": "14px",
+        "weight": "400",
+        "tracking": "normal",
+        "description": "Descriptions, plot summaries, standard text"
+      },
+      "caption": {
+        "size": "12px",
+        "weight": "500",
+        "tracking": "0.02em",
+        "description": "Tags, release year, small metadata"
+      }
+    }
+  },
+  "spacing_and_layout": {
+    "screen_padding": "20px",
+    "card_padding": "16px",
+    "item_spacing": "12px",
+    "section_spacing": "32px",
+    "border_radius_card": "18px",
+    "border_radius_button": "12px",
+    "border_radius_pill": "999px"
+  },
+  "components": {
+    "splash_screen": {
+      "background_color": "#0D0D0D",
+      "logo_path": "assets/images/movana_logo.png",
+      "tagline": "Stop Scrolling, Start Watching",
+      "animation": "Fade in and slight scale up (0.95 to 1.0) over 800ms, total duration 2000ms"
+    },
+    "login_screen": {
+      "logo_alignment": "center horizontal, generous top padding",
+      "buttons": ["Google Sign-In", "Guest Login"],
+      "footer": "Privacy Policy & Terms of Conditions links in secondary text"
+    },
+    "movie_card_vertical": {
+      "background": "#181818",
+      "border_radius": "18px",
+      "image_aspect_ratio": "2:3",
+      "shadow": "0px 4px 12px rgba(0, 0, 0, 0.3)",
+      "content": "Poster, Title, Release Year, Rating, OTT Logos"
+    },
+    "ott_platform_selector": {
+      "style": "Large horizontal scrolling cards or grid",
+      "active_state": "Border highlighted with #F5C518, slight scale up",
+      "inactive_state": "Opacity 50%, grayscale"
+    },
+    "action_buttons": {
+      "already_watched": {
+        "default": {"background": "#181818", "icon_color": "#B5B5B5", "text": "Already Watched"},
+        "active": {"background": "#181818", "icon_color": "#F5C518", "text": "Watched"}
+      },
+      "watchlist": {
+        "default": {"background": "#181818", "icon_color": "#B5B5B5", "text": "Watchlist"},
+        "active": {"background": "#181818", "icon_color": "#FF3B5C", "text": "Watchlisted"}
+      }
+    },
+    "bottom_navigation": {
+      "background": "rgba(24, 24, 24, 0.85)",
+      "blur_effect": "15px",
+      "active_color": "#FFFFFF",
+      "inactive_color": "#B5B5B5",
+      "indicator": "Small #F5C518 dot below active icon"
+    }
+  },
+  "motion_and_interaction": {
+    "page_transitions": "Material 3 Shared Axis (Z-axis) for deep navigation, Fade Through for Bottom Nav",
+    "scrolling": "60fps, lazy loaded images with fade-in",
+    "button_press": "Scale down to 0.95 with 100ms ease-out",
+    "loading_states": "Skeleton loaders using #181818 with a subtle #2A2A2A shimmer wave"
+  },
+  "testing_and_accessibility": {
+    "automation_attributes": "All interactive and key informational elements MUST include a 'data-testid' attribute (or Flutter 'Key' like Key('login-button')) for robust automated testing."
+  },
+  "image_urls": {
+    "brand_logo": {
+      "url": "movana_logo.png",
+      "description": "Primary typography logo for Movana",
+      "category": "branding"
+    },
+    "app_icon": {
+      "url": "assets/images/movana_icon.png",
+      "description": "App launcher and generic brand symbol",
+      "category": "branding"
+    },
+    "placeholder_poster": {
+      "url": "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzV8MHwxfHNlYXJjaHwxfHxjaW5lbWF0aWMlMjBtb3ZpZSUyMHBvc3RlciUyMGRhcmt8ZW58MHx8fHwxNzgyNjY2MjQ3fDA&ixlib=rb-4.1.0&q=85",
+      "description": "Fallback cinematic movie poster if TMDB image fails to load",
+      "category": "movies"
+    }
+  },
+  "instructions_to_main_agent": [
+    "You are building a Flutter application (Android/iOS) per the user requirements. Structure your Flutter project logically (Clean Architecture, MVVM or Riverpod).",
+    "Strictly adhere to the Dark Theme colors: #0D0D0D for background, #181818 for cards.",
+    "All rounded corners must be exactly 18px to match the premium 'Spotify/Letterboxd/Netflix' modern vibe.",
+    "Do NOT overcrowd the screens. Provide generous padding (e.g., 20px screen edges, 32px between vertical sections).",
+    "Build out the Firebase integration skeletons (Auth, Firestore, Cloud Functions, AdMob) and the TMDB API service layer. Add mock/guest data logic for development.",
+    "If you generate any accompanying Web/Admin portal (e.g. using .js/.jsx), use Tailwind classes mapping to these exact hex codes.",
+    "Ensure the Splash screen and Login screen utilize the provided local paths exactly as requested: 'movana_logo.png' and 'assets/images/movana_icon.png'.",
+    "Apply test keys ('Key(...)' in Flutter or 'data-testid' in HTML/JS) to all actionable items."
+  ]
+}
