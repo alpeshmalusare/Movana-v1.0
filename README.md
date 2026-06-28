@@ -20,7 +20,7 @@ Movana is a premium dark-themed Flutter app for discovering highly rated movies 
 2. Run `flutter pub get`.
 3. Firebase config files:
    - Android is configured with `android/app/google-services.json` for package `app.movana.discovery`.
-   - Add `ios/Runner/GoogleService-Info.plist` when iOS Firebase setup is ready.
+   - iOS is configured with `ios/Runner/GoogleService-Info.plist` for bundle `app.movana.discovery`.
 4. Configure Firebase Auth, Firestore, Storage, Analytics, Crashlytics, Messaging, and AdMob in Firebase Console.
 5. Store TMDB credentials securely for Cloud Functions using `TMDB_ACCESS_TOKEN`; do not place TMDB secrets in the client app.
 6. Run the app with `flutter run`.

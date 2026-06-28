@@ -1,5 +1,12 @@
-# iOS Project Placeholder
+# iOS Firebase Setup
 
-Run `flutter create . --platforms android,ios` from the repository root after installing Flutter to generate native Android/iOS runner files around the existing Movana Dart application.
+`GoogleService-Info.plist` has been placed in the correct Flutter iOS directory:
 
-Then add `ios/Runner/GoogleService-Info.plist` from Firebase Console.
+`ios/Runner/GoogleService-Info.plist`
+
+Verified Firebase values:
+
+- Bundle Identifier: `app.movana.discovery`
+- Firebase Project: `movana-f578b`
+
+Run `flutter pub get`, then open the iOS project in Xcode and ensure `GoogleService-Info.plist` is included in the Runner target if Xcode does not add it automatically.

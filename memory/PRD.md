@@ -30,6 +30,7 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 - Affiliate, analytics, notification, offline cache, AdMob, rating provider, and Firestore schema service skeletons.
 - README, native Android/iOS placeholders, test credentials doc, and smoke test.
 - Android Firebase configuration added at `android/app/google-services.json` for package `app.movana.discovery` and Firebase project `movana-f578b`.
+- iOS Firebase configuration added at `ios/Runner/GoogleService-Info.plist` for bundle `app.movana.discovery` and Firebase project `movana-f578b`.
 
 ## Validation
 - Flutter/Dart SDK is not installed in the container, so runtime `flutter analyze` and `flutter test` could not run here.
@@ -38,7 +39,7 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 
 ## Prioritized Backlog
 ### P0
-- Add remaining iOS Firebase config file and enable Auth, Firestore, Storage, Analytics, Crashlytics, FCM, AdMob in Firebase Console.
+- Enable Auth, Firestore, Storage, Analytics, Crashlytics, FCM, and AdMob in Firebase Console.
 - Add TMDB access token to Cloud Functions environment and connect Flutter service to proxy.
 - Run `flutter pub get`, `flutter analyze`, and `flutter test` in a Flutter environment.
 - Replace in-memory library state with Firestore-backed user watchlist/watched repositories.

@@ -10,5 +10,4 @@ ios/.symlinks/
 ios/Flutter/ephemeral/
 *.iml
 firebase-admin.json
-GoogleService-Info.plist
 .env
