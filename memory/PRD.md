@@ -32,6 +32,8 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 - Android Firebase configuration added at `android/app/google-services.json` for package `app.movana.discovery` and Firebase project `movana-f578b`.
 - iOS Firebase configuration added at `ios/Runner/GoogleService-Info.plist` for bundle `app.movana.discovery` and Firebase project `movana-f578b`.
 - `firebase_options.dart` added and Firebase Auth, Firestore, Storage, Cloud Messaging, Analytics, Crashlytics, and Functions services are live.
+- iOS Google Sign-In callback configured via `CFBundleURLTypes` using `REVERSED_CLIENT_ID`.
+- Firestore rules deny anonymous writes to `watchlist` and `watched`, matching the guest-mode product rule.
 
 ## Validation
 - Flutter/Dart SDK is not installed in the container, so runtime `flutter analyze` and `flutter test` could not run here.
