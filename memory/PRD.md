@@ -55,3 +55,9 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 
 ### P2
 - Add AI recommendation module, shareable image rendering, achievements engine, advanced analytics dashboards, and richer unit/widget tests.
+
+## Preview Recovery Update
+- Added a React/Vite web preview under `/app/frontend` so the Emergent preview URL has a runnable web app on port 3000.
+- Added a minimal FastAPI preview health API under `/app/backend` so supervisor backend starts cleanly on port 8001.
+- Restarted supervisor services and verified `http://localhost:3000` returns 200 and `/api/health` returns OK.
+- The web preview mirrors Movana UI/flows for review; the primary production codebase remains Flutter Android/iOS.
