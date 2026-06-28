@@ -26,9 +26,15 @@ class LoginScreen extends ConsumerWidget {
                 icon: Icons.g_mobiledata_rounded,
                 background: Colors.white,
                 foreground: Colors.black,
-                onTap: () {
-                  ref.read(authProvider.notifier).mockGoogleSignIn();
-                  context.go('/');
+                onTap: () async {
+                  try {
+                    await ref.read(authProvider.notifier).signInWithGoogle();
+                    if (context.mounted) context.go('/');
+                  } catch (_) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Google sign-in failed. Please check Firebase OAuth setup.')));
+                    }
+                  }
                 },
               ),
               const SizedBox(height: 14),
@@ -38,9 +44,15 @@ class LoginScreen extends ConsumerWidget {
                 icon: Icons.person_outline_rounded,
                 background: MovanaColors.card,
                 foreground: MovanaColors.textPrimary,
-                onTap: () {
-                  ref.read(authProvider.notifier).continueAsGuest();
-                  context.go('/');
+                onTap: () async {
+                  try {
+                    await ref.read(authProvider.notifier).continueAsGuest();
+                    if (context.mounted) context.go('/');
+                  } catch (_) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Anonymous sign-in failed. Enable it in Firebase Authentication.')));
+                    }
+                  }
                 },
               ),
               const Spacer(),

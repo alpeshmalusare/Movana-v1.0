@@ -14,4 +14,14 @@ class UserProfile {
   final String photoUrl;
   final bool isGuest;
   final List<String> preferredPlatforms;
+
+  Map<String, Object?> toFirestore() {
+    return {
+      'userID': id,
+      'name': name,
+      'email': email,
+      'photo': photoUrl,
+      'preferredPlatforms': preferredPlatforms,
+    };
+  }
 }

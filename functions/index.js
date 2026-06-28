@@ -1,5 +1,5 @@
 const { onSchedule } = require('firebase-functions/v2/scheduler');
-const { onRequest } = require('firebase-functions/v2/https');
+const { HttpsError, onCall, onRequest } = require('firebase-functions/v2/https');
 const admin = require('firebase-admin');
 const axios = require('axios');
 
@@ -69,7 +69,7 @@ function assertRateLimit(req) {
     return;
   }
   if (current.count >= maxRequestsPerWindow) {
-    const error = new Error('TMDB proxy rate limit exceeded');
+    const error = new HttpsError('resource-exhausted', 'TMDB proxy rate limit exceeded');
     error.status = 429;
     throw error;
   }
@@ -87,7 +87,7 @@ async function tmdbGet(path, params = {}) {
   return response.data;
 }
 
-exports.refreshMovieMetadata = onSchedule('every 24 hours', async () => {
+exports.refreshMovieMetadata = onSchedule({ schedule: 'every 24 hours', region: 'asia-south1' }, async () => {
   const data = await tmdbGet('/trending/all/day', { language: 'en-IN' });
   const batch = db.batch();
   for (const item of data.results || []) {
@@ -109,7 +109,23 @@ exports.refreshMovieMetadata = onSchedule('every 24 hours', async () => {
   await batch.commit();
 });
 
-exports.tmdbProxy = onRequest(async (req, res) => {
+exports.tmdbCallable = onCall({ region: 'asia-south1', enforceAppCheck: false }, async (request) => {
+  try {
+    assertRateLimit(request.rawRequest);
+    const uid = request.auth?.uid;
+    if (!uid) throw new HttpsError('unauthenticated', 'Authentication is required');
+    const path = request.data?.path;
+    if (!path || typeof path !== 'string' || !isAllowedPath(path)) {
+      throw new HttpsError('invalid-argument', 'Unsupported TMDB endpoint');
+    }
+    return await tmdbGet(path, sanitizeQuery(request.data?.query || {}));
+  } catch (error) {
+    if (error instanceof HttpsError) throw error;
+    throw new HttpsError('internal', 'TMDB callable request failed');
+  }
+});
+
+exports.tmdbProxy = onRequest({ region: 'asia-south1' }, async (req, res) => {
   try {
     assertAppAccess(req);
     assertRateLimit(req);

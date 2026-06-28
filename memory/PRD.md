@@ -5,18 +5,18 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 
 ## User Choices
 - Build target: Flutter Android/iOS app structure.
-- Firebase: Firebase-ready architecture with placeholders.
+- Firebase: Android and iOS Firebase config added; live Auth/Firestore/Storage/Messaging/Analytics/Crashlytics/Functions integration implemented.
 - TMDB: user will provide API key later.
 - First deliverable: full architecture skeleton with key screens working first.
-- Auth: guest mode fully and mock signed-in profile for demo.
+- Auth: live Anonymous guest mode and live Google Sign-In.
 
 ## Architecture Decisions
 - Flutter + Riverpod + GoRouter + Material 3 dark-only theme.
 - Clean modular structure under `lib/core`, `lib/data`, and `lib/features`.
-- Firebase initialization is placeholder-safe until native config files are added.
+- Firebase initialization uses `firebase_options.dart` generated from Android/iOS config values.
 - TMDB calls are designed to move through hardened Cloud Functions proxy, keeping secrets off the client.
 - Ratings use a provider abstraction so TMDB can later be swapped with licensed IMDb-compatible data.
-- Watchlist/My Theatre currently use in-memory Riverpod state for demo; Firestore schema/rules are ready.
+- Watchlist/My Theatre use live Firestore for signed-in Google users; anonymous guests are blocked from saving as required.
 - AdMob uses official test IDs and should later read production IDs from Firebase Remote Config.
 
 ## Implemented
@@ -31,6 +31,7 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 - README, native Android/iOS placeholders, test credentials doc, and smoke test.
 - Android Firebase configuration added at `android/app/google-services.json` for package `app.movana.discovery` and Firebase project `movana-f578b`.
 - iOS Firebase configuration added at `ios/Runner/GoogleService-Info.plist` for bundle `app.movana.discovery` and Firebase project `movana-f578b`.
+- `firebase_options.dart` added and Firebase Auth, Firestore, Storage, Cloud Messaging, Analytics, Crashlytics, and Functions services are live.
 
 ## Validation
 - Flutter/Dart SDK is not installed in the container, so runtime `flutter analyze` and `flutter test` could not run here.
@@ -39,7 +40,7 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 
 ## Prioritized Backlog
 ### P0
-- Enable Auth, Firestore, Storage, Analytics, Crashlytics, FCM, and AdMob in Firebase Console.
+- Confirm Firebase Console providers are enabled: Google Sign-In, Anonymous Auth, Firestore, Storage, Analytics, Crashlytics, FCM, Functions, and AdMob.
 - Add TMDB access token to Cloud Functions environment and connect Flutter service to proxy.
 - Run `flutter pub get`, `flutter analyze`, and `flutter test` in a Flutter environment.
 - Replace in-memory library state with Firestore-backed user watchlist/watched repositories.

@@ -59,9 +59,15 @@ class MovieDetailsScreen extends ConsumerWidget {
               ]),
               const SizedBox(height: 10),
               Row(children: [
-                Expanded(child: OutlinedButton.icon(key: ValueKey('details-watched-${movie.id}'), onPressed: () => ref.read(libraryProvider.notifier).toggleWatched(movie), icon: Icon(watched ? Icons.check_circle : Icons.visibility_outlined), label: Text(watched ? 'Watched' : 'Already Watched'))),
+                Expanded(child: OutlinedButton.icon(key: ValueKey('details-watched-${movie.id}'), onPressed: () async {
+                  final ok = await ref.read(libraryProvider.notifier).toggleWatched(movie);
+                  if (!ok && context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sign in with Google to save My Theatre.')));
+                }, icon: Icon(watched ? Icons.check_circle : Icons.visibility_outlined), label: Text(watched ? 'Watched' : 'Already Watched'))),
                 const SizedBox(width: 10),
-                Expanded(child: OutlinedButton.icon(key: ValueKey('details-watchlist-${movie.id}'), onPressed: () => ref.read(libraryProvider.notifier).toggleWatchlist(movie), icon: Icon(saved ? Icons.favorite : Icons.favorite_border, color: saved ? MovanaColors.watchlist : null), label: Text(saved ? 'Saved' : 'Watchlist'))),
+                Expanded(child: OutlinedButton.icon(key: ValueKey('details-watchlist-${movie.id}'), onPressed: () async {
+                  final ok = await ref.read(libraryProvider.notifier).toggleWatchlist(movie);
+                  if (!ok && context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sign in with Google to save Watchlist.')));
+                }, icon: Icon(saved ? Icons.favorite : Icons.favorite_border, color: saved ? MovanaColors.watchlist : null), label: Text(saved ? 'Saved' : 'Watchlist'))),
               ]),
               const SizedBox(height: 30),
               const Text('Similar Movies', key: ValueKey('similar-movies-title'), style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),

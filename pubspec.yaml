@@ -23,6 +23,7 @@ dependencies:
   firebase_analytics: ^11.3.6
   firebase_crashlytics: ^4.2.0
   firebase_messaging: ^15.1.6
+  firebase_functions: ^5.1.6
   google_sign_in: ^6.2.2
   google_mobile_ads: ^5.2.0
   share_plus: ^10.1.2

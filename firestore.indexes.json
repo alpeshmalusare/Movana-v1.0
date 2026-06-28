@@ -1,6 +1,31 @@
 {
   "indexes": [
     {
+      "collectionGroup": "watchlist",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userID", "order": "ASCENDING" },
+        { "fieldPath": "addedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "watched",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userID", "order": "ASCENDING" },
+        { "fieldPath": "watchedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "affiliateBanners",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "displayPosition", "order": "ASCENDING" },
+        { "fieldPath": "active", "order": "ASCENDING" },
+        { "fieldPath": "priority", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "movies",
       "queryScope": "COLLECTION",
       "fields": [

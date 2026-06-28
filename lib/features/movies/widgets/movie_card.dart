@@ -77,7 +77,12 @@ class MovieCard extends ConsumerWidget {
                           activeColor: MovanaColors.accent,
                           icon: watched ? Icons.check_circle : Icons.visibility_outlined,
                           label: watched ? 'Watched' : 'Already Watched',
-                          onTap: () => ref.read(libraryProvider.notifier).toggleWatched(movie),
+                          onTap: () async {
+                            final ok = await ref.read(libraryProvider.notifier).toggleWatched(movie);
+                            if (!ok && context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sign in with Google to save My Theatre.')));
+                            }
+                          },
                         ),
                         const SizedBox(width: 8),
                         _ActionButton(
@@ -86,7 +91,12 @@ class MovieCard extends ConsumerWidget {
                           activeColor: MovanaColors.watchlist,
                           icon: watchlisted ? Icons.favorite : Icons.favorite_border,
                           label: watchlisted ? 'Saved' : 'Watchlist',
-                          onTap: () => ref.read(libraryProvider.notifier).toggleWatchlist(movie),
+                          onTap: () async {
+                            final ok = await ref.read(libraryProvider.notifier).toggleWatchlist(movie);
+                            if (!ok && context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sign in with Google to save Watchlist.')));
+                            }
+                          },
                         ),
                       ],
                     ),

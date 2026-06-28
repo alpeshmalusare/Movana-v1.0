@@ -8,10 +8,10 @@ Movana is a premium dark-themed Flutter app for discovering highly rated movies 
 
 - Flutter Android/iOS project structure with Clean Architecture-inspired folders.
 - Riverpod state management, Material 3 dark theme, premium splash/login/home/listing/details flows.
-- Guest mode and mock Google profile flow for development.
+- Live Firebase Authentication with Google Sign-In and Anonymous guest sign-in.
 - Watchlist and My Theatre state, share actions, statistics, admin dashboard skeleton.
-- Firebase-ready configuration: Firestore rules, Storage rules, Cloud Functions scheduler/proxy structure.
-- TMDB service layer with demo fallback data until the TMDB key and Firebase project are configured.
+- Firebase configuration: Android/iOS options, Firestore rules, Storage rules, Analytics, Crashlytics, FCM, and Cloud Functions in `asia-south1`.
+- TMDB service layer routes through Firebase Cloud Functions with demo fallback data if TMDB server credentials are not configured.
 - AdMob-ready service with official test ad IDs.
 
 ## Required Setup
@@ -35,5 +35,4 @@ Functions live in `/functions`:
 ## Notes
 
 - IMDb scraping is intentionally not used. The app currently uses TMDB-style ratings and keeps the rating provider swappable.
-- Firebase integration is architecture-ready with placeholders because live Firebase credentials were not provided yet.
-- Demo content is included so the core user experience works immediately.
+- Demo content remains available as a fallback while live TMDB/Firestore data is populated.

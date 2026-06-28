@@ -41,8 +41,8 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 10),
           FilledButton.icon(
             key: const ValueKey('logout-button'),
-            onPressed: () {
-              ref.read(authProvider.notifier).logout();
+            onPressed: () async {
+              await ref.read(authProvider.notifier).logout();
               context.go('/login');
             },
             icon: const Icon(Icons.logout),

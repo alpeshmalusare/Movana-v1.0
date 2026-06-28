@@ -1,10 +1,10 @@
 # Movana Test Credentials
 
-No real Firebase credentials are configured yet.
+Firebase Android and iOS app config files are configured.
 
 Development auth flows available:
 
-- Guest mode: tap `Continue as Guest`; profile displays `Guest Cinephile` / `guest@movana.local`.
-- Mock Google mode: tap `Continue with Google`; profile displays `Movana User` / `demo@movana.app`.
+- Anonymous mode: tap `Continue as Guest`; creates a live Firebase anonymous user.
+- Google mode: tap `Continue with Google`; creates/signs in with a live Firebase Google user.
 
-These are MOCKED development identities until Firebase Authentication config files are provided.
+No seeded email/password account is used.

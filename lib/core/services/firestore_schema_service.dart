@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class FirestoreCollections {
   static const users = 'users';
   static const watchlist = 'watchlist';
@@ -20,7 +22,7 @@ class FirestoreSchemaService {
       'name': name,
       'email': email,
       'photo': photo,
-      'createdAt': DateTime.now().toIso8601String(),
+      'createdAt': FieldValue.serverTimestamp(),
       'preferredPlatforms': preferredPlatforms,
     };
   }
@@ -29,7 +31,7 @@ class FirestoreSchemaService {
     return {
       'userID': userID,
       'movieID': movieID,
-      'addedAt': DateTime.now().toIso8601String(),
+      'addedAt': FieldValue.serverTimestamp(),
     };
   }
 }

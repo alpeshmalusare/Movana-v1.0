@@ -5,12 +5,16 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     match /watchlist/{docId} {
-      allow read, write: if request.auth != null && resource.data.userID == request.auth.uid;
+      allow read, update, delete: if request.auth != null && resource.data.userID == request.auth.uid;
       allow create: if request.auth != null && request.resource.data.userID == request.auth.uid;
     }
     match /watched/{docId} {
-      allow read, write: if request.auth != null && resource.data.userID == request.auth.uid;
+      allow read, update, delete: if request.auth != null && resource.data.userID == request.auth.uid;
       allow create: if request.auth != null && request.resource.data.userID == request.auth.uid;
+    }
+    match /affiliateBanners/{bannerId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
     }
     match /movies/{movieId} {
       allow read: if true;
