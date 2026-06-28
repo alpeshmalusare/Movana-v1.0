@@ -1,27 +1,37 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isGoogleUser() {
+      return isSignedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
     match /watchlist/{docId} {
-      allow read, update, delete: if request.auth != null && resource.data.userID == request.auth.uid;
-      allow create: if request.auth != null && request.resource.data.userID == request.auth.uid;
+      allow read: if isSignedIn() && resource.data.userID == request.auth.uid;
+      allow update, delete: if isGoogleUser() && resource.data.userID == request.auth.uid;
+      allow create: if isGoogleUser() && request.resource.data.userID == request.auth.uid;
     }
     match /watched/{docId} {
-      allow read, update, delete: if request.auth != null && resource.data.userID == request.auth.uid;
-      allow create: if request.auth != null && request.resource.data.userID == request.auth.uid;
+      allow read: if isSignedIn() && resource.data.userID == request.auth.uid;
+      allow update, delete: if isGoogleUser() && resource.data.userID == request.auth.uid;
+      allow create: if isGoogleUser() && request.resource.data.userID == request.auth.uid;
     }
     match /affiliateBanners/{bannerId} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.token.admin == true;
+      allow write: if isSignedIn() && request.auth.token.admin == true;
     }
     match /movies/{movieId} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.token.admin == true;
+      allow write: if isSignedIn() && request.auth.token.admin == true;
     }
     match /admin/{document=**} {
-      allow read, write: if request.auth != null && request.auth.token.admin == true;
+      allow read, write: if isSignedIn() && request.auth.token.admin == true;
     }
   }
 }
