@@ -61,3 +61,8 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 - Added a minimal FastAPI preview health API under `/app/backend` so supervisor backend starts cleanly on port 8001.
 - Restarted supervisor services and verified `http://localhost:3000` returns 200 and `/api/health` returns OK.
 - The web preview mirrors Movana UI/flows for review; the primary production codebase remains Flutter Android/iOS.
+
+## Vite Preview Host Fix
+- Added `/app/frontend/vite.config.js` with `server.host = 0.0.0.0`, `server.port = 3000`, and `server.allowedHosts = true`.
+- Added matching preview config and restarted the Vite supervisor process.
+- Verified local and Emergent preview-style Host header requests return HTTP 200.
