@@ -1,0 +1,69 @@
+{
+  "summary": "Performed static QA review of Movana Flutter app skeleton (no Flutter/Dart SDK available for runtime tests). Verified architecture, assets, routing, major screens, Riverpod state wiring, and Firebase/Cloud Functions skeleton.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "functions/tmdbProxy",
+        "issue": "Proxy accepts any TMDB path with server bearer token and no allowlist/rate-limit/auth guard, creating potential abuse/cost/security risk.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": [
+      {
+        "endpoint": "functions/tmdbProxy",
+        "issue": "req.query is forwarded wholesale to TMDB, including internal 'path' param; should sanitize forwarded params."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Auth and Firebase-dependent flows",
+        "issue": "Firebase config files and project credentials are not present, so real Firebase auth/storage/firestore flows are not executable in this environment.",
+        "affected_selectors": [
+          "google-sign-in-button",
+          "guest-login-button"
+        ]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/lib/main.dart",
+    "/app/lib/features/auth/splash_screen.dart",
+    "/app/lib/features/auth/login_screen.dart",
+    "/app/lib/features/home/home_screen.dart",
+    "/app/lib/features/movies/widgets/movie_card.dart",
+    "/app/lib/features/movies/movie_details_screen.dart",
+    "/app/lib/features/watchlist/watchlist_screen.dart",
+    "/app/lib/features/theatre/my_theatre_screen.dart",
+    "/app/lib/features/profile/profile_screen.dart",
+    "/app/lib/features/admin/admin_dashboard_screen.dart",
+    "/app/functions/index.js"
+  ],
+  "action_items": [
+    "Harden Cloud Function tmdbProxy with endpoint allowlist, optional app/auth check, and abuse protection (rate limit / budget guard).",
+    "Sanitize proxy query before forwarding to TMDB (remove non-TMDB keys like path).",
+    "Add /app/memory/test_credentials.md for future auth QA workflow compliance.",
+    "If web support is planned, add CORS handling and origin controls for tmdbProxy."
+  ],
+  "critical_code_review_comments": [
+    "No Flutter/Dart test suite present for regression (widget/service tests missing).",
+    "Auth and TMDB data flows are intentionally MOCKED/placeholder-based; production readiness depends on Firebase/TMDB secret wiring.",
+    "Current Firebase bootstrap swallows all init exceptions; consider structured logging for diagnosability in non-demo builds."
+  ],
+  "updated_files": [
+    "/app/test_reports/iteration_1.json"
+  ],
+  "success_rate": {
+    "backend": "80%",
+    "frontend": "85%"
+  },
+  "test_credentials": "MISSING: /app/memory/test_credentials.md not found.",
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Flutter/Dart SDK unavailable in container. Static validation done: assets exist, splash 2s route logic present, login mock/guest flows wired, home/filter/list/details/watchlist/theatre/profile/admin skeletons present. functions/index.js syntax valid via node --check, firebase.json JSON valid. Prior test_reports folder was absent; initialized iteration_1.",
+  "rca of the issue": "Primary high-risk issue is tmdbProxy over-permissiveness: reproduction by inspecting /app/functions/index.js shows user-controlled path is passed to tmdbGet with privileged TMDB token and no allowlist. This can be abused to hit arbitrary TMDB endpoints and increase cost/exposure. Mitigation: restrict to approved endpoint patterns, strip unknown params, add basic auth/app-check/rate-limiting, and return sanitized error responses."
+}

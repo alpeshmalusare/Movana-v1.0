@@ -1,0 +1,56 @@
+class AppConstants {
+  static const platforms = [
+    'Netflix',
+    'Amazon Prime Video',
+    'JioHotstar',
+    'Sony LIV',
+    'ZEE5',
+    'Apple TV+',
+    'JioCinema',
+    'MX Player',
+    'Lionsgate Play',
+    'Crunchyroll',
+    'MUBI',
+  ];
+
+  static const genres = [
+    'Action',
+    'Adventure',
+    'Animation',
+    'Biography',
+    'Comedy',
+    'Crime',
+    'Documentary',
+    'Drama',
+    'Family',
+    'Fantasy',
+    'History',
+    'Horror',
+    'Music',
+    'Mystery',
+    'Romance',
+    'Sci-Fi',
+    'Sport',
+    'Thriller',
+    'War',
+    'Western',
+  ];
+
+  static const languages = [
+    'Hindi',
+    'English',
+    'Tamil',
+    'Telugu',
+    'Malayalam',
+    'Kannada',
+    'Marathi',
+    'Bengali',
+    'Punjabi',
+    'Gujarati',
+    'Odia',
+    'Assamese',
+    'Bhojpuri',
+    'Urdu',
+    'Nepali',
+  ];
+}
