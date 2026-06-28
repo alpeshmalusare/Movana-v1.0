@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "634989467300",
+    "project_id": "movana-f578b",
+    "storage_bucket": "movana-f578b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:634989467300:android:a185f34bf3a625c2c77831",
+        "android_client_info": {
+          "package_name": "app.movana.discovery"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBO1HfkfB-XP2T0-3tgad2nMECG5tiD788"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
