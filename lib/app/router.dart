@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../features/admin/admin_dashboard_screen.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/splash_screen.dart';
+import '../features/home/genre_flow_screen.dart';
+import '../features/home/ott_selection_screen.dart';
+import '../features/home/platform_home_screen.dart';
 import '../features/movies/movie_details_screen.dart';
 import '../features/movies/movie_listing_screen.dart';
 import '../features/shell/app_shell.dart';
@@ -14,8 +17,23 @@ final GoRouter appRouter = GoRouter(
   routes: [
     GoRoute(path: '/splash', builder: (_, __) => const SplashScreen()),
     GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
+    GoRoute(path: '/ott', builder: (_, __) => const OttSelectionScreen()),
+    GoRoute(path: '/platform-home', builder: (_, state) => PlatformHomeScreen(platform: state.extra as String? ?? 'Movana')),
+    GoRoute(
+      path: '/genres',
+      builder: (_, state) {
+        final extra = state.extra as Map<String, String>? ?? const {};
+        return GenreFlowScreen(platform: extra['platform'] ?? 'Movana', contentType: extra['type'] ?? 'movie');
+      },
+    ),
     GoRoute(path: '/', builder: (_, __) => const AppShell()),
-    GoRoute(path: '/movies', builder: (_, __) => const MovieListingScreen()),
+    GoRoute(
+      path: '/movies',
+      builder: (_, state) {
+        final extra = state.extra as Map<String, String>? ?? const {};
+        return MovieListingScreen(platform: extra['platform'], contentType: extra['type'], genre: extra['genre']);
+      },
+    ),
     GoRoute(
       path: '/movie/:id',
       builder: (_, state) => MovieDetailsScreen(movieId: state.pathParameters['id']!),

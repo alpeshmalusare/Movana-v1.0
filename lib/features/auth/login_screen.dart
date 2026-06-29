@@ -29,7 +29,7 @@ class LoginScreen extends ConsumerWidget {
                 onTap: () async {
                   try {
                     await ref.read(authProvider.notifier).signInWithGoogle();
-                    if (context.mounted) context.go('/');
+                    if (context.mounted) context.go('/ott');
                   } catch (_) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Google sign-in failed. Please check Firebase OAuth setup.')));
@@ -47,7 +47,7 @@ class LoginScreen extends ConsumerWidget {
                 onTap: () async {
                   try {
                     await ref.read(authProvider.notifier).continueAsGuest();
-                    if (context.mounted) context.go('/');
+                    if (context.mounted) context.go('/ott');
                   } catch (_) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Anonymous sign-in failed. Enable it in Firebase Authentication.')));
