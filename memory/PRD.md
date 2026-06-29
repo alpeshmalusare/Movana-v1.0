@@ -75,3 +75,12 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 - Backend now supports provider logos, poster-backed genre cards, discover by provider/genre/type, global multi-search, runtime/provider hydration, and faster parallel genre loading.
 - Flutter routes were refactored to `/ott`, `/platform-home`, `/genres`, `/movies`; login navigates to `/ott`; bottom navigation is reduced to Home/My Theatre/Watchlist.
 - Flutter OTT cards use provider logo images; Flutter genre cards use poster-backed visuals; Flutter listing accepts platform/type/genre route params and functional rating/time menus.
+
+## OTT/Details/Sharing Upgrade
+- OTT selection now uses premium two-column provider cards with full TMDB logos, contained aspect ratio, selected glow, and checkmark.
+- Home bottom navigation resets to OTT selection from any preview state; Flutter shell Home route also goes to `/ott`.
+- Movie cards open a full TMDB details experience with backdrop, poster, metadata, Where to Watch, cast/crew, trailer, recommendations, similar titles, and image galleries.
+- Movie list has three live filters: Rating, Release Date, and Language using TMDB `with_original_language`.
+- Share Theatre now generates a Movana-branded PNG share card in preview and Flutter uses native `shareXFiles` image sharing.
+- Genre artwork is unique: backend dynamically fetches/cache unique TMDB backdrops; Flutter fallback mapping now has unique backdrop URLs for all listed genres.
+- Restored `/app/frontend/.env` with `REACT_APP_BACKEND_URL=/api` for preview/test URL contract.
