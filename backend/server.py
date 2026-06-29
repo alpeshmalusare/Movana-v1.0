@@ -44,7 +44,37 @@ DESIRED_PROVIDERS = [
     "MX Player",
     "aha",
     "Sun Nxt",
+    "Lionsgate Play",
+    "Discovery+",
 ]
+
+LANGUAGES = {
+    "all": "All Languages",
+    "en": "English",
+    "hi": "Hindi",
+    "ta": "Tamil",
+    "te": "Telugu",
+    "ml": "Malayalam",
+    "kn": "Kannada",
+    "bn": "Bengali",
+    "mr": "Marathi",
+    "pa": "Punjabi",
+    "gu": "Gujarati",
+    "ko": "Korean",
+    "ja": "Japanese",
+    "zh": "Chinese",
+    "es": "Spanish",
+    "fr": "French",
+    "de": "German",
+    "it": "Italian",
+    "tr": "Turkish",
+    "th": "Thai",
+    "id": "Indonesian",
+    "ru": "Russian",
+    "ar": "Arabic",
+}
+
+GENRE_CACHE: dict[str, list[dict[str, Any]]] = {}
 
 app.add_middleware(
     CORSMiddleware,
@@ -117,15 +147,34 @@ def certification_from(release_dates: dict[str, Any]) -> str:
     return "NR"
 
 
-def providers_from(watch_providers: dict[str, Any]) -> list[str]:
+def tv_certification_from(content_ratings: dict[str, Any]) -> str:
+    for country in content_ratings.get("results", []):
+        if country.get("iso_3166_1") == REGION and country.get("rating"):
+            return country.get("rating")
+    return "NR"
+
+
+def provider_objects_from(watch_providers: dict[str, Any]) -> list[dict[str, Any]]:
     region_data = watch_providers.get("results", {}).get(REGION, {})
-    providers: list[str] = []
+    providers: list[dict[str, Any]] = []
+    seen: set[int] = set()
     for bucket in ["flatrate", "free", "ads", "rent", "buy"]:
         for provider in region_data.get(bucket, []) or []:
+            provider_id = provider.get("provider_id")
             name = provider.get("provider_name")
-            if name and name not in providers:
-                providers.append(name)
+            if provider_id and provider_id not in seen and name:
+                seen.add(provider_id)
+                providers.append({
+                    "id": provider_id,
+                    "name": name,
+                    "logo": image_url(provider.get("logo_path"), "w300"),
+                    "type": bucket,
+                })
     return providers
+
+
+def providers_from(watch_providers: dict[str, Any]) -> list[str]:
+    return [provider["name"] for provider in provider_objects_from(watch_providers)]
 
 
 def trailer_from(videos: dict[str, Any]) -> str:
@@ -145,6 +194,39 @@ def director_from(credits: dict[str, Any]) -> str:
         if person.get("job") == "Director":
             return person.get("name", "Unknown")
     return "Unknown"
+
+
+def crew_roles_from(credits: dict[str, Any]) -> dict[str, list[str]]:
+    roles = {"Director": [], "Writer": [], "Producer": [], "Music Composer": []}
+    music_jobs = {"Original Music Composer", "Music", "Music Director", "Composer"}
+    writer_jobs = {"Writer", "Screenplay", "Story", "Novel"}
+    for person in credits.get("crew", []) or []:
+        name = person.get("name")
+        job = person.get("job")
+        if not name:
+            continue
+        if job == "Director" and name not in roles["Director"]:
+            roles["Director"].append(name)
+        if job in writer_jobs and name not in roles["Writer"]:
+            roles["Writer"].append(name)
+        if job == "Producer" and name not in roles["Producer"]:
+            roles["Producer"].append(name)
+        if job in music_jobs and name not in roles["Music Composer"]:
+            roles["Music Composer"].append(name)
+    return roles
+
+
+def cast_objects_from(credits: dict[str, Any], limit: int = 20) -> list[dict[str, Any]]:
+    return [
+        {
+            "id": person.get("id"),
+            "name": person.get("name"),
+            "character": person.get("character") or "",
+            "photo": image_url(person.get("profile_path"), "w185"),
+        }
+        for person in (credits.get("cast", []) or [])[:limit]
+        if person.get("name")
+    ]
 
 
 def normalize_movie(
@@ -169,8 +251,10 @@ def normalize_movie(
         "genres": genre_names,
         "runtime": int(source.get("runtime") or (source.get("episode_run_time") or [0])[0] or 0),
         "language": (source.get("original_language") or item.get("original_language") or "").upper(),
+        "languageCode": (source.get("original_language") or item.get("original_language") or ""),
         "providers": providers_from(source.get("watch/providers", {})),
-        "age": certification_from(source.get("release_dates", {})) if detail else "NR",
+        "providerObjects": provider_objects_from(source.get("watch/providers", {})),
+        "age": certification_from(source.get("release_dates", {})) if detail and media_type == "movie" else tv_certification_from(source.get("content_ratings", {})) if detail else "NR",
         "type": "Series" if media_type in ["tv", "series"] else "Movie",
         "director": director_from(source.get("credits", {})) if detail else "View details",
         "cast": cast_from(source.get("credits", {})) if detail else "View details for cast",
@@ -216,6 +300,9 @@ async def tmdb_providers():
 
 @app.get("/api/tmdb/genres")
 async def tmdb_genres(content_type: str = Query(default="movie", pattern="^(movie|tv)$")):
+    cache_key = content_type
+    if cache_key in GENRE_CACHE:
+        return {"genres": GENRE_CACHE[cache_key]}
     genres_response = await tmdb_get(f"/genre/{content_type}/list")
     async def genre_card(genre: dict[str, Any]) -> dict[str, Any]:
         discover_path = f"/discover/{content_type}"
@@ -227,15 +314,27 @@ async def tmdb_genres(content_type: str = Query(default="movie", pattern="^(movi
             date_field: "2099-12-31",
             "page": 1,
         })
-        poster_item = next((item for item in data.get("results", []) if item.get("poster_path") or item.get("backdrop_path")), {})
+        candidates = [item for item in data.get("results", []) if item.get("backdrop_path") or item.get("poster_path")]
         return {
             "id": genre["id"],
             "name": genre["name"],
-            "poster": image_url(poster_item.get("poster_path"), "w500"),
-            "backdrop": image_url(poster_item.get("backdrop_path"), "w780"),
+            "candidates": candidates[:8],
         }
 
-    results = await asyncio.gather(*(genre_card(genre) for genre in genres_response.get("genres", [])))
+    raw_results = await asyncio.gather(*(genre_card(genre) for genre in genres_response.get("genres", [])))
+    used_images: set[str] = set()
+    results = []
+    for genre in raw_results:
+        selected = next((item for item in genre.pop("candidates") if (item.get("backdrop_path") or item.get("poster_path")) not in used_images), {})
+        image_path = selected.get("backdrop_path") or selected.get("poster_path")
+        if image_path:
+            used_images.add(image_path)
+        results.append({
+            **genre,
+            "poster": image_url(selected.get("poster_path"), "w500"),
+            "backdrop": image_url(selected.get("backdrop_path") or selected.get("poster_path"), "w780"),
+        })
+    GENRE_CACHE[cache_key] = results
     return {"genres": results}
 
 
@@ -246,6 +345,7 @@ async def tmdb_discover(
     provider_id: int | None = None,
     rating: str = "top",
     time: str = "all",
+    language: str = "all",
     page: int = Query(default=1, ge=1, le=20),
 ):
     path = f"/discover/{content_type}"
@@ -265,6 +365,8 @@ async def tmdb_discover(
     }
     if rating in rating_ranges:
         params["vote_average.gte"], params["vote_average.lte"] = rating_ranges[rating]
+    if language in LANGUAGES and language != "all":
+        params["with_original_language"] = language
     if time == "latest":
         params["sort_by"] = "primary_release_date.desc" if content_type == "movie" else "first_air_date.desc"
     elif time == "oldest":
@@ -273,6 +375,11 @@ async def tmdb_discover(
     raw_items = [item for item in data.get("results", []) if item.get("poster_path")]
     hydrated = await hydrate_list_items(raw_items, content_type)
     return {"results": [normalize_movie(item, detail=item, content_type=content_type) for item in hydrated]}
+
+
+@app.get("/api/tmdb/languages")
+async def tmdb_languages():
+    return {"languages": [{"code": code, "name": name} for code, name in LANGUAGES.items()]}
 
 
 @app.get("/api/tmdb/search")
@@ -296,15 +403,50 @@ async def tmdb_search(q: str = Query(default="", min_length=0), page: int = Quer
 
 @app.get("/api/tmdb/movie/{movie_id}")
 async def tmdb_movie_details(movie_id: int):
+    return await tmdb_title_details("movie", movie_id)
+
+
+@app.get("/api/tmdb/title/{content_type}/{item_id}")
+async def tmdb_title_details(content_type: str, item_id: int):
+    if content_type not in ["movie", "tv"]:
+        raise HTTPException(status_code=400, detail="Invalid content type")
+    append = "credits,videos,watch/providers,recommendations,similar,images"
+    append += ",release_dates" if content_type == "movie" else ",content_ratings"
     detail = await tmdb_get(
-        f"/movie/{movie_id}",
-        {"append_to_response": "credits,videos,watch/providers,release_dates,recommendations"},
+        f"/{content_type}/{item_id}",
+        {"append_to_response": append, "include_image_language": "en,null"},
     )
-    movie = normalize_movie(detail, detail=detail)
+    movie = normalize_movie(detail, detail=detail, content_type=content_type)
     recommendations = [
-        normalize_movie(item)
+        normalize_movie(item, content_type=content_type)
         for item in detail.get("recommendations", {}).get("results", [])[:6]
         if item.get("poster_path")
     ]
+    similar = [
+        normalize_movie(item, content_type=content_type)
+        for item in detail.get("similar", {}).get("results", [])[:6]
+        if item.get("poster_path")
+    ]
+    images = detail.get("images", {})
+    release_date = detail.get("release_date") or detail.get("first_air_date") or ""
+    original_title = detail.get("original_title") or detail.get("original_name") or movie["title"]
+    origin_countries = detail.get("origin_country") or [country.get("iso_3166_1") for country in detail.get("production_countries", [])]
+    movie.update({
+        "originalTitle": original_title,
+        "releaseDate": release_date,
+        "popularity": round(float(detail.get("popularity") or 0), 1),
+        "country": ", ".join([country for country in origin_countries if country]),
+        "status": detail.get("status") or "",
+        "tagline": detail.get("tagline") or "",
+        "productionCompanies": [company.get("name") for company in detail.get("production_companies", []) if company.get("name")],
+        "productionCountries": [country.get("name") for country in detail.get("production_countries", []) if country.get("name")],
+        "spokenLanguages": [language.get("english_name") for language in detail.get("spoken_languages", []) if language.get("english_name")],
+        "whereToWatch": provider_objects_from(detail.get("watch/providers", {})),
+        "topCast": cast_objects_from(detail.get("credits", {}), 24),
+        "crewRoles": crew_roles_from(detail.get("credits", {})),
+        "backdrops": [image_url(img.get("file_path"), "w780") for img in images.get("backdrops", [])[:10] if img.get("file_path")],
+        "posters": [image_url(img.get("file_path"), "w500") for img in images.get("posters", [])[:10] if img.get("file_path")],
+    })
     movie["recommendations"] = recommendations
+    movie["similar"] = similar
     return movie

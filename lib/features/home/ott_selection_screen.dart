@@ -42,7 +42,7 @@ class OttSelectionScreen extends StatelessWidget {
                 child: GridView.builder(
                   key: const ValueKey('ott-platform-grid'),
                   itemCount: ottPlatforms.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 14, mainAxisSpacing: 14),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 22, mainAxisSpacing: 22),
                   itemBuilder: (context, index) {
                     final platform = ottPlatforms[index];
                     return InkWell(
@@ -50,11 +50,12 @@ class OttSelectionScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(18),
                       onTap: () => context.push('/platform-home', extra: {'name': platform.name, 'providerId': '${platform.providerId}'}),
                       child: Container(
-                        decoration: BoxDecoration(color: MovanaColors.card, borderRadius: BorderRadius.circular(18), border: Border.all(color: MovanaColors.divider)),
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(color: MovanaColors.card, borderRadius: BorderRadius.circular(20), border: Border.all(color: MovanaColors.divider), boxShadow: [BoxShadow(color: Colors.black.withOpacity(.25), blurRadius: 22, offset: const Offset(0, 10))]),
                         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          Image.network(platform.logoUrl, key: ValueKey('ott-logo-${platform.name}'), height: 42, fit: BoxFit.contain),
-                          const SizedBox(height: 8),
-                          Text(platform.name, textAlign: TextAlign.center, style: const TextStyle(color: MovanaColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w700)),
+                          Expanded(child: Center(child: Image.network(platform.logoUrl, key: ValueKey('ott-logo-${platform.name}'), fit: BoxFit.contain))),
+                          const SizedBox(height: 10),
+                          Text(platform.name, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w800)),
                         ]),
                       ),
                     );

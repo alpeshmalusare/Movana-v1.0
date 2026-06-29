@@ -19,7 +19,9 @@ const allowedPathPatterns = [
   /^\/tv\/\d+$/,
   /^\/movie\/\d+\/(credits|recommendations|videos|watch\/providers)$/,
   /^\/movie\/\d+\/(release_dates)$/,
+  /^\/movie\/\d+\/(images|similar)$/,
   /^\/tv\/\d+\/(credits|recommendations|videos|watch\/providers)$/,
+  /^\/tv\/\d+\/(images|similar|content_ratings)$/,
 ];
 
 const allowedQueryKeys = new Set([
@@ -32,6 +34,15 @@ const allowedQueryKeys = new Set([
   'first_air_date_year',
   'include_adult',
   'append_to_response',
+  'watch_region',
+  'with_watch_providers',
+  'with_genres',
+  'sort_by',
+  'vote_count.gte',
+  'vote_average.gte',
+  'vote_average.lte',
+  'with_original_language',
+  'include_image_language',
 ]);
 
 const rateWindowMs = 60 * 1000;

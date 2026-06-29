@@ -83,17 +83,18 @@ final tmdbMovieDetailsProvider = FutureProvider.family<Movie, String>((ref, movi
 });
 
 class FlowMovieQuery {
-  const FlowMovieQuery({required this.platform, required this.providerId, required this.contentType, required this.genre, this.rating = 'top', this.time = 'all'});
+  const FlowMovieQuery({required this.platform, required this.providerId, required this.contentType, required this.genre, this.rating = 'top', this.time = 'all', this.language = 'all'});
   final String platform;
   final String providerId;
   final String contentType;
   final String genre;
   final String rating;
   final String time;
+  final String language;
 }
 
 final flowMoviesProvider = FutureProvider.family<List<Movie>, FlowMovieQuery>((ref, query) {
-  return ref.watch(tmdbServiceProvider).discoverByFlow(contentType: query.contentType, genre: query.genre, providerId: query.providerId, rating: query.rating, time: query.time);
+  return ref.watch(tmdbServiceProvider).discoverByFlow(contentType: query.contentType, genre: query.genre, providerId: query.providerId, rating: query.rating, time: query.time, language: query.language);
 });
 
 final filteredMoviesProvider = FutureProvider<List<Movie>>((ref) async {

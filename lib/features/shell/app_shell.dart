@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/movana_theme.dart';
 import '../home/home_screen.dart';
@@ -23,7 +24,13 @@ class _AppShellState extends State<AppShell> {
       bottomNavigationBar: NavigationBar(
         key: const ValueKey('bottom-navigation'),
         selectedIndex: _index,
-        onDestinationSelected: (value) => setState(() => _index = value),
+        onDestinationSelected: (value) {
+          if (value == 0) {
+            context.go('/ott');
+            return;
+          }
+          setState(() => _index = value);
+        },
         backgroundColor: MovanaColors.card.withOpacity(.92),
         indicatorColor: MovanaColors.accent.withOpacity(.16),
         destinations: const [

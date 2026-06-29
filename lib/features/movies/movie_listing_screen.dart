@@ -20,10 +20,11 @@ class MovieListingScreen extends ConsumerStatefulWidget {
 class _MovieListingScreenState extends ConsumerState<MovieListingScreen> {
   String rating = 'top';
   String time = 'all';
+  String language = 'all';
 
   @override
   Widget build(BuildContext context) {
-    final moviesAsync = ref.watch(flowMoviesProvider(FlowMovieQuery(platform: widget.platform ?? 'Movana', providerId: widget.providerId ?? '8', contentType: widget.contentType ?? 'movie', genre: widget.genre ?? 'Drama', rating: rating, time: time)));
+    final moviesAsync = ref.watch(flowMoviesProvider(FlowMovieQuery(platform: widget.platform ?? 'Movana', providerId: widget.providerId ?? '8', contentType: widget.contentType ?? 'movie', genre: widget.genre ?? 'Drama', rating: rating, time: time, language: language)));
     return Scaffold(
       appBar: AppBar(title: Text('${widget.genre ?? 'Top Rated'} ${widget.contentType == 'series' ? 'Series' : 'Movies'}', key: const ValueKey('listing-title'))),
       body: moviesAsync.when(
@@ -35,10 +36,10 @@ class _MovieListingScreenState extends ConsumerState<MovieListingScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
-                    child: Row(children: [
-                      Expanded(child: _FilterMenu(value: rating, values: const {'top': 'Top Rated', '8_10': '8.0–10.0', '6_8': '6.0–8.0', '4_6': '4.0–6.0', '1_4': '1.0–4.0'}, onChanged: (value) => setState(() => rating = value))),
-                      const SizedBox(width: 10),
-                      Expanded(child: _FilterMenu(value: time, values: const {'all': 'All Time', 'latest': 'Latest → Oldest', 'oldest': 'Oldest → Latest'}, onChanged: (value) => setState(() => time = value))),
+                    child: Wrap(spacing: 10, runSpacing: 10, children: [
+                      SizedBox(width: 150, child: _FilterMenu(value: rating, values: const {'top': 'Top Rated', '8_10': '8.0–10.0', '6_8': '6.0–8.0', '4_6': '4.0–6.0', '1_4': '1.0–4.0'}, onChanged: (value) => setState(() => rating = value))),
+                      SizedBox(width: 150, child: _FilterMenu(value: time, values: const {'all': 'All Time', 'latest': 'Latest → Oldest', 'oldest': 'Oldest → Latest'}, onChanged: (value) => setState(() => time = value))),
+                      SizedBox(width: 170, child: _FilterMenu(value: language, values: const {'all': 'All Languages', 'en': 'English', 'hi': 'Hindi', 'ta': 'Tamil', 'te': 'Telugu', 'ml': 'Malayalam', 'kn': 'Kannada', 'bn': 'Bengali', 'mr': 'Marathi', 'pa': 'Punjabi', 'gu': 'Gujarati', 'ko': 'Korean', 'ja': 'Japanese', 'zh': 'Chinese', 'es': 'Spanish', 'fr': 'French', 'de': 'German', 'it': 'Italian', 'tr': 'Turkish', 'th': 'Thai', 'id': 'Indonesian', 'ru': 'Russian', 'ar': 'Arabic'}, onChanged: (value) => setState(() => language = value))),
                     ]),
                   ),
                   Expanded(

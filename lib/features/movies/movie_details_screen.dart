@@ -51,11 +51,18 @@ class MovieDetailsScreen extends ConsumerWidget {
               const SizedBox(height: 24),
               Text(movie.overview, key: ValueKey('details-overview-${movie.id}'), style: const TextStyle(color: MovanaColors.textSecondary, height: 1.5)),
               const SizedBox(height: 22),
+              if (movie.originalTitle.isNotEmpty && movie.originalTitle != movie.title) _InfoLine(label: 'Original Title', value: movie.originalTitle),
+              _InfoLine(label: 'Release Date', value: movie.releaseDate),
+              _InfoLine(label: 'Popularity', value: movie.popularity.toStringAsFixed(1)),
+              _InfoLine(label: 'Language', value: movie.language),
+              _InfoLine(label: 'Country', value: movie.country.isEmpty ? 'Not available' : movie.country),
+              _InfoLine(label: 'Status', value: movie.status.isEmpty ? 'Not available' : movie.status),
+              if (movie.tagline.isNotEmpty) _InfoLine(label: 'Tagline', value: movie.tagline),
               _InfoLine(label: 'Director', value: movie.director),
               _InfoLine(label: 'Writer', value: movie.writer),
               _InfoLine(label: 'Cast', value: movie.cast.join(', ')),
               _InfoLine(label: 'Production', value: movie.productionCompany),
-              _InfoLine(label: 'Streaming', value: movie.providers.isEmpty ? 'Currently in Theatres' : movie.providers.join(', ')),
+              _InfoLine(label: 'Where to Watch', value: movie.providers.isEmpty ? 'Streaming Information Not Available' : movie.providers.join(', ')),
               const SizedBox(height: 22),
               Row(children: [
                 Expanded(child: FilledButton.icon(key: ValueKey('details-trailer-${movie.id}'), onPressed: () {}, icon: const Icon(Icons.play_arrow_rounded), label: const Text('Trailer'))),
@@ -75,6 +82,37 @@ class MovieDetailsScreen extends ConsumerWidget {
                 }, icon: Icon(saved ? Icons.favorite : Icons.favorite_border, color: saved ? MovanaColors.watchlist : null), label: Text(saved ? 'Saved' : 'Watchlist'))),
               ]),
               const SizedBox(height: 30),
+              if (movie.whereToWatch.isNotEmpty) ...[
+                const Text('Where to Watch', key: ValueKey('where-to-watch-title'), style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
+                const SizedBox(height: 12),
+                Wrap(spacing: 10, runSpacing: 10, children: [
+                  for (final provider in movie.whereToWatch)
+                    Chip(key: ValueKey('watch-provider-${provider['name']}'), label: Text(provider['name'] ?? 'Provider')),
+                ]),
+                const SizedBox(height: 24),
+              ],
+              if (movie.topCast.isNotEmpty) ...[
+                const Text('Top Billed Cast', key: ValueKey('top-cast-title'), style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 162,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: movie.topCast.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 12),
+                    itemBuilder: (_, index) {
+                      final cast = movie.topCast[index];
+                      return SizedBox(width: 92, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        ClipRRect(borderRadius: BorderRadius.circular(12), child: CachedNetworkImage(imageUrl: cast['photo'] ?? '', height: 104, width: 92, fit: BoxFit.cover)),
+                        const SizedBox(height: 6),
+                        Text(cast['name'] ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
+                        Text(cast['character'] ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: MovanaColors.textSecondary, fontSize: 11)),
+                      ]));
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
               const Text('Similar Movies', key: ValueKey('similar-movies-title'), style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
               const SizedBox(height: 12),
               for (final item in similar) MovieCard(movie: item, compact: true),
