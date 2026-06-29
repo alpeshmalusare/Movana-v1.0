@@ -217,8 +217,7 @@ async def tmdb_providers():
 @app.get("/api/tmdb/genres")
 async def tmdb_genres(content_type: str = Query(default="movie", pattern="^(movie|tv)$")):
     genres_response = await tmdb_get(f"/genre/{content_type}/list")
-    results = []
-    for genre in genres_response.get("genres", []):
+    async def genre_card(genre: dict[str, Any]) -> dict[str, Any]:
         discover_path = f"/discover/{content_type}"
         date_field = "primary_release_date.lte" if content_type == "movie" else "first_air_date.lte"
         data = await tmdb_get(discover_path, {
@@ -229,12 +228,14 @@ async def tmdb_genres(content_type: str = Query(default="movie", pattern="^(movi
             "page": 1,
         })
         poster_item = next((item for item in data.get("results", []) if item.get("poster_path") or item.get("backdrop_path")), {})
-        results.append({
+        return {
             "id": genre["id"],
             "name": genre["name"],
             "poster": image_url(poster_item.get("poster_path"), "w500"),
             "backdrop": image_url(poster_item.get("backdrop_path"), "w780"),
-        })
+        }
+
+    results = await asyncio.gather(*(genre_card(genre) for genre in genres_response.get("genres", [])))
     return {"genres": results}
 
 

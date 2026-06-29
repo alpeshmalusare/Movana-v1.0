@@ -14,6 +14,7 @@ const allowedPathPatterns = [
   /^\/tv\/(popular|top_rated|on_the_air)$/,
   /^\/genre\/(movie|tv)\/list$/,
   /^\/search\/(movie|tv|person|multi)$/,
+  /^\/discover\/(movie|tv)$/,
   /^\/movie\/\d+$/,
   /^\/tv\/\d+$/,
   /^\/movie\/\d+\/(credits|recommendations|videos|watch\/providers)$/,

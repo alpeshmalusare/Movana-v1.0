@@ -4,8 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/movana_theme.dart';
 
 class PlatformHomeScreen extends StatelessWidget {
-  const PlatformHomeScreen({super.key, required this.platform});
+  const PlatformHomeScreen({super.key, required this.platform, required this.providerId});
   final String platform;
+  final String providerId;
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +26,9 @@ class PlatformHomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               Row(children: [
-                Expanded(child: _TypeCard(label: 'MOVIES', icon: Icons.movie_creation_outlined, onTap: () => context.push('/genres', extra: {'platform': platform, 'type': 'movie'}))),
+                Expanded(child: _TypeCard(label: 'MOVIES', icon: Icons.movie_creation_outlined, onTap: () => context.push('/genres', extra: {'platform': platform, 'providerId': providerId, 'type': 'movie'}))),
                 const SizedBox(width: 22),
-                Expanded(child: _TypeCard(label: 'SERIES', icon: Icons.tv_outlined, onTap: () => context.push('/genres', extra: {'platform': platform, 'type': 'series'}))),
+                Expanded(child: _TypeCard(label: 'SERIES', icon: Icons.tv_outlined, onTap: () => context.push('/genres', extra: {'platform': platform, 'providerId': providerId, 'type': 'series'}))),
               ]),
             ],
           ),

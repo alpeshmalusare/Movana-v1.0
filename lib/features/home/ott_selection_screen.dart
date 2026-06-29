@@ -4,23 +4,22 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/movana_theme.dart';
 
 class OttPlatform {
-  const OttPlatform(this.name, this.logoText, this.color);
+  const OttPlatform(this.name, this.logoUrl, this.providerId);
   final String name;
-  final String logoText;
-  final Color color;
+  final String logoUrl;
+  final int providerId;
 }
 
 const ottPlatforms = [
-  OttPlatform('Netflix', 'N', Color(0xFFE50914)),
-  OttPlatform('Prime Video', 'prime', Color(0xFF00A8E1)),
-  OttPlatform('Disney+ Hotstar', 'hotstar', Color(0xFF123B91)),
-  OttPlatform('JioHotstar', 'JH', Color(0xFF2F80ED)),
-  OttPlatform('Sony LIV', 'LIV', Color(0xFFFFA000)),
-  OttPlatform('ZEE5', 'ZEE5', Color(0xFFE91E63)),
-  OttPlatform('Apple TV+', 'tv+', Color(0xFFFFFFFF)),
-  OttPlatform('MX Player', 'MX', Color(0xFF2196F3)),
-  OttPlatform('Aha', 'aha', Color(0xFFFF6D00)),
-  OttPlatform('Sun NXT', 'sun', Color(0xFFFFB300)),
+  OttPlatform('Netflix', 'https://image.tmdb.org/t/p/w300/pbpMk2JmcoNnQwx5JGpXngfoWtp.jpg', 8),
+  OttPlatform('Prime Video', 'https://image.tmdb.org/t/p/w300/pvske1MyAoymrs5bguRfVqYiM9a.jpg', 119),
+  OttPlatform('JioHotstar', 'https://image.tmdb.org/t/p/w300/kVqjgpcwvDJOhCupjcLzwwtOp52.jpg', 2336),
+  OttPlatform('Sony LIV', 'https://image.tmdb.org/t/p/w300/3973zlBbBXdXxaWqRWzGG2GYxbT.jpg', 237),
+  OttPlatform('ZEE5', 'https://image.tmdb.org/t/p/w300/gP67NRy1ShUJilrzMsbOmEmdmcv.jpg', 232),
+  OttPlatform('Apple TV+', 'https://image.tmdb.org/t/p/w300/mcbz1LgtErU9p4UdbZ0rG6RTWHX.jpg', 350),
+  OttPlatform('MX Player', 'https://image.tmdb.org/t/p/w300/ayHY6wKxvCKj2PU8eRPFxnPc6B0.jpg', 515),
+  OttPlatform('Aha', 'https://image.tmdb.org/t/p/w300/8WerMI8XcZXqPpkHTZNtzMzousF.jpg', 532),
+  OttPlatform('Sun NXT', 'https://image.tmdb.org/t/p/w300/6KEQzITx2RrCAQt5Nw9WrL1OI8z.jpg', 309),
 ];
 
 class OttSelectionScreen extends StatelessWidget {
@@ -49,11 +48,11 @@ class OttSelectionScreen extends StatelessWidget {
                     return InkWell(
                       key: ValueKey('ott-platform-${platform.name}'),
                       borderRadius: BorderRadius.circular(18),
-                      onTap: () => context.push('/platform-home', extra: platform.name),
+                      onTap: () => context.push('/platform-home', extra: {'name': platform.name, 'providerId': '${platform.providerId}'}),
                       child: Container(
                         decoration: BoxDecoration(color: MovanaColors.card, borderRadius: BorderRadius.circular(18), border: Border.all(color: MovanaColors.divider)),
                         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          Text(platform.logoText, textAlign: TextAlign.center, style: TextStyle(color: platform.name == 'Apple TV+' ? Colors.white : platform.color, fontSize: 24, fontWeight: FontWeight.w900)),
+                          Image.network(platform.logoUrl, key: ValueKey('ott-logo-${platform.name}'), height: 42, fit: BoxFit.contain),
                           const SizedBox(height: 8),
                           Text(platform.name, textAlign: TextAlign.center, style: const TextStyle(color: MovanaColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w700)),
                         ]),

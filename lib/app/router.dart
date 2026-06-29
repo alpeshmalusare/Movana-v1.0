@@ -18,12 +18,18 @@ final GoRouter appRouter = GoRouter(
     GoRoute(path: '/splash', builder: (_, __) => const SplashScreen()),
     GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
     GoRoute(path: '/ott', builder: (_, __) => const OttSelectionScreen()),
-    GoRoute(path: '/platform-home', builder: (_, state) => PlatformHomeScreen(platform: state.extra as String? ?? 'Movana')),
+    GoRoute(
+      path: '/platform-home',
+      builder: (_, state) {
+        final extra = state.extra as Map<String, String>? ?? const {};
+        return PlatformHomeScreen(platform: extra['name'] ?? 'Movana', providerId: extra['providerId'] ?? '8');
+      },
+    ),
     GoRoute(
       path: '/genres',
       builder: (_, state) {
         final extra = state.extra as Map<String, String>? ?? const {};
-        return GenreFlowScreen(platform: extra['platform'] ?? 'Movana', contentType: extra['type'] ?? 'movie');
+        return GenreFlowScreen(platform: extra['platform'] ?? 'Movana', providerId: extra['providerId'] ?? '8', contentType: extra['type'] ?? 'movie');
       },
     ),
     GoRoute(path: '/', builder: (_, __) => const AppShell()),
@@ -31,7 +37,7 @@ final GoRouter appRouter = GoRouter(
       path: '/movies',
       builder: (_, state) {
         final extra = state.extra as Map<String, String>? ?? const {};
-        return MovieListingScreen(platform: extra['platform'], contentType: extra['type'], genre: extra['genre']);
+        return MovieListingScreen(platform: extra['platform'], providerId: extra['providerId'], contentType: extra['type'], genre: extra['genre']);
       },
     ),
     GoRoute(

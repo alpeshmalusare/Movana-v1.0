@@ -67,3 +67,11 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 - Added `/app/frontend/vite.config.js` with `server.host = 0.0.0.0`, `server.port = 3000`, and `server.allowedHosts = true`.
 - Added matching preview config and restarted the Vite supervisor process.
 - Verified local and Emergent preview-style Host header requests return HTTP 200.
+
+## UX Redesign Update
+- Replaced the cluttered one-page discovery experience with the requested step flow: Login → OTT Selection → Platform Home → Genre Selection → Movie/Series List.
+- Preview now uses square OTT cards with TMDB provider logos, large Movies/Series cards, poster-backed genre cards, Top Rated/All Time filters, and a three-tab bottom nav: Home, My Theatre, Watchlist.
+- Movie cards now emphasize speed: poster, title, rating, year/runtime, overview, Already Watched toggle, and red Watchlist heart.
+- Backend now supports provider logos, poster-backed genre cards, discover by provider/genre/type, global multi-search, runtime/provider hydration, and faster parallel genre loading.
+- Flutter routes were refactored to `/ott`, `/platform-home`, `/genres`, `/movies`; login navigates to `/ott`; bottom navigation is reduced to Home/My Theatre/Watchlist.
+- Flutter OTT cards use provider logo images; Flutter genre cards use poster-backed visuals; Flutter listing accepts platform/type/genre route params and functional rating/time menus.

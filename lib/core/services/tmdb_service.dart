@@ -22,6 +22,40 @@ class TmdbService {
   Future<List<Movie>> nowPlaying({int page = 1}) => _list('/movie/now_playing', page: page);
   Future<List<Movie>> upcoming({int page = 1}) => _list('/movie/upcoming', page: page);
 
+  Future<List<Movie>> discoverByFlow({
+    required String contentType,
+    required String genre,
+    required String providerId,
+    String rating = 'top',
+    String time = 'all',
+    int page = 1,
+  }) async {
+    // Firebase callable proxies TMDB discover endpoints. Genre names are resolved client-side for common genres.
+    final genreId = _genreIds[genre] ?? 18;
+    final type = contentType == 'series' ? 'tv' : 'movie';
+    final data = await _functionsService.tmdbProxy(path: '/discover/$type', query: {
+      'page': page,
+      'with_genres': genreId,
+      'watch_region': 'IN',
+      'with_watch_providers': providerId,
+      'sort_by': time == 'latest'
+          ? (type == 'movie' ? 'primary_release_date.desc' : 'first_air_date.desc')
+          : time == 'oldest'
+              ? (type == 'movie' ? 'primary_release_date.asc' : 'first_air_date.asc')
+              : 'vote_average.desc',
+      'vote_count.gte': 250,
+      if (rating == '8_10') 'vote_average.gte': 8,
+      if (rating == '6_8') 'vote_average.gte': 6,
+      if (rating == '6_8') 'vote_average.lte': 8,
+      if (rating == '4_6') 'vote_average.gte': 4,
+      if (rating == '4_6') 'vote_average.lte': 6,
+      if (rating == '1_4') 'vote_average.gte': 1,
+      if (rating == '1_4') 'vote_average.lte': 4,
+    });
+    final results = data['results'] as List<dynamic>? ?? const [];
+    return results.whereType<Map>().map((item) => _movieFromTmdb(Map<String, dynamic>.from(item))).where((movie) => movie.posterUrl.isNotEmpty).toList();
+  }
+
   Future<List<Movie>> discover({String? query, int page = 1}) {
     if (query != null && query.trim().isNotEmpty) {
       return search(query.trim(), page: page);
@@ -129,4 +163,26 @@ class TmdbService {
     }
     return 'NR';
   }
+
+  static const _genreIds = {
+    'Action': 28,
+    'Adventure': 12,
+    'Animation': 16,
+    'Comedy': 35,
+    'Crime': 80,
+    'Documentary': 99,
+    'Drama': 18,
+    'Family': 10751,
+    'Fantasy': 14,
+    'History': 36,
+    'Horror': 27,
+    'Music': 10402,
+    'Mystery': 9648,
+    'Romance': 10749,
+    'Sci-Fi': 878,
+    'Science Fiction': 878,
+    'Thriller': 53,
+    'War': 10752,
+    'Western': 37,
+  };
 }
