@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 
 import '../features/admin/admin_dashboard_screen.dart';
 import '../features/auth/login_screen.dart';
-import '../features/auth/splash_screen.dart';
 import '../features/home/genre_flow_screen.dart';
 import '../features/home/ott_selection_screen.dart';
 import '../features/home/platform_home_screen.dart';
@@ -11,11 +10,10 @@ import '../features/movies/movie_details_screen.dart';
 import '../features/movies/movie_listing_screen.dart';
 import '../features/shell/app_shell.dart';
 
-final GoRouter appRouter = GoRouter(
-  initialLocation: '/splash',
+GoRouter buildAppRouter({required bool isAuthenticated}) => GoRouter(
+  initialLocation: isAuthenticated ? '/ott' : '/login',
   observers: [FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance)],
   routes: [
-    GoRoute(path: '/splash', builder: (_, __) => const SplashScreen()),
     GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
     GoRoute(path: '/ott', builder: (_, __) => const OttSelectionScreen()),
     GoRoute(

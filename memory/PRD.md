@@ -20,7 +20,7 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 - AdMob uses official test IDs and should later read production IDs from Firebase Remote Config.
 
 ## Implemented
-- Splash screen with uploaded Movana logo, fade/scale animation, 2-second login transition.
+- Fast startup routing with no custom splash screen: unauthenticated users land immediately on Login; authenticated users land immediately on OTT Selection.
 - Login screen with mock Google profile and guest mode.
 - Home discovery with instant search, OTT multi-select, content type toggle, genre grid, rating/year/language filters.
 - Movie/series listing cards with poster, metadata, ratings, providers/theatre status, watched/watchlist buttons.
@@ -85,8 +85,12 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 - Genre artwork is unique: backend dynamically fetches/cache unique TMDB backdrops; Flutter fallback mapping now has unique backdrop URLs for all listed genres.
 - Restored `/app/frontend/.env` with `REACT_APP_BACKEND_URL=/api` for preview/test URL contract.
 
-## P0 Splash & JioHotstar Asset Update — 2026-06-29
+## P0 JioHotstar Asset Update — 2026-06-29
 - Replaced the cropped JioHotstar provider logo in both Flutter and React preview with the uploaded uncropped PNG asset at `assets/images/jiohotstar_logo.png` and `frontend/public/assets/images/jiohotstar_logo.png`.
 - Added the new Flutter asset constant and registered it in `pubspec.yaml`; Flutter OTT cards now render the local JioHotstar asset with `BoxFit.contain`.
-- Rebuilt the Movana splash as a cinematic Netflix-style sequence in Flutter and React preview: gold “M” mark, glow halo, light sweep, smooth zoom to black, and automatic transition to login.
-- Validation completed: React lint passed, Vite production build passed, local backend/frontend health checks returned 200, screenshot smoke test confirmed splash transition and JioHotstar logo visibility. Flutter/Dart CLI is not installed in this container, so Flutter runtime analysis could not be executed; static build-safe checks passed.
+
+## P0 Splash Removal & Instant Startup — 2026-06-29
+- Removed the custom Flutter splash screen page and all React cinematic splash rendering/styles; no splash delay, logo animation, loading screen, or intermediate transition remains in the app code.
+- Flutter startup now builds the router with `FirebaseAuth.instance.currentUser != null` and immediately routes to `/ott` for authenticated users or `/login` for unauthenticated users, preserving existing Firebase Auth sign-in logic.
+- React preview now renders Login immediately for unauthenticated preview sessions and persists preview auth in `sessionStorage` so reloads go directly to OTT Selection without a splash.
+- Validation completed: React lint passed, Vite production build passed, code reference scan found no splash artifacts, screenshot smoke test confirmed immediate Login and direct authenticated-preview OTT startup. Flutter/Dart CLI is not installed in this container, so Flutter runtime analysis could not be executed; static routing checks passed.

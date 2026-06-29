@@ -30,8 +30,7 @@ const timeOptions = [['all', 'All Time'], ['latest', 'Latest to Oldest'], ['olde
 const languageOptions = [['all','All Languages'],['en','English'],['hi','Hindi'],['ta','Tamil'],['te','Telugu'],['ml','Malayalam'],['kn','Kannada'],['bn','Bengali'],['mr','Marathi'],['pa','Punjabi'],['gu','Gujarati'],['ko','Korean'],['ja','Japanese'],['zh','Chinese'],['es','Spanish'],['fr','French'],['de','German'],['it','Italian'],['tr','Turkish'],['th','Thai'],['id','Indonesian'],['ru','Russian'],['ar','Arabic']];
 
 function App() {
-  const [boot, setBoot] = useState(true);
-  const [authed, setAuthed] = useState(false);
+  const [authed, setAuthed] = useState(() => window.sessionStorage.getItem('movana-preview-auth') === 'true');
   const [step, setStep] = useState('ott');
   const [tab, setTab] = useState('home');
   const [providers, setProviders] = useState(fallbackProviders);
@@ -55,7 +54,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => { const timer = setTimeout(() => setBoot(false), 2500); return () => clearTimeout(timer); }, []);
   useEffect(() => { fetch('/api/tmdb/providers').then(r => r.json()).then(d => setProviders(patchProviderLogos(d.providers?.length ? d.providers : fallbackProviders))).catch(() => setProviders(fallbackProviders)); }, []);
 
   useEffect(() => {
@@ -110,8 +108,7 @@ function App() {
   const watchedMovies = useMemo(() => watched.map(id => knownTitles[id]).filter(Boolean), [knownTitles, watched]);
   const watchlistMovies = useMemo(() => watchlist.map(id => knownTitles[id]).filter(Boolean), [knownTitles, watchlist]);
 
-  if (boot) return <Splash />;
-  if (!authed) return <Login onEnter={() => { setAuthed(true); setStep('ott'); }} />;
+  if (!authed) return <Login onEnter={() => { window.sessionStorage.setItem('movana-preview-auth', 'true'); setAuthed(true); setStep('ott'); }} />;
 
   return <div className="app-shell" data-testid="movana-redesign-app"><main className="phone-frame redesigned">
     {tab === 'home' && step === 'ott' && <OttSelection selected={provider} providers={providers} onSelect={(p) => { setProvider(p); setRating('top'); setTime('all'); setLanguage('all'); setStep('platform'); }} />}
@@ -127,7 +124,6 @@ function App() {
 
 function mergeKnown(prev, items) { const next = {...prev}; (items || []).forEach(item => { if (item?.id) next[item.id] = item; }); return next; }
 function patchProviderLogos(items) { return (items || []).map(p => /hotstar|jio/i.test(`${p.name} ${p.tmdbName || ''}`) ? {...p, id: p.id || 2336, name: 'JioHotstar', logo: jioHotstarLogo} : p); }
-function Splash() { return <div className="splash cinematic-splash" data-testid="cinematic-splash-screen"><div className="splash-vignette"/><div className="cinematic-mark" data-testid="splash-cinematic-m-logo"><span>M</span><i/></div><div className="splash-blackout"/></div>; }
 function Login({ onEnter }) { return <div className="login" data-testid="login-screen"><img src={logo} alt="Movana"/><button data-testid="google-login" onClick={onEnter}>Continue with Google</button><button data-testid="guest-login" className="secondary" onClick={onEnter}>Continue as Guest</button><footer>Privacy Policy · Terms & Conditions</footer></div>; }
 function BackButton({ onClick }) { return <button className="icon-back" data-testid="back-button" onClick={onClick}><ChevronLeft size={28}/></button>; }
 

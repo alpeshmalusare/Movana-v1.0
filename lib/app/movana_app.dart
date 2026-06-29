@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../core/theme/movana_theme.dart';
@@ -13,6 +14,8 @@ class MovanaApp extends StatefulWidget {
 }
 
 class _MovanaAppState extends State<MovanaApp> {
+  late final _router = buildAppRouter(isAuthenticated: FirebaseAuth.instance.currentUser != null);
+
   @override
   void initState() {
     super.initState();
@@ -27,7 +30,7 @@ class _MovanaAppState extends State<MovanaApp> {
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.dark,
       darkTheme: MovanaTheme.dark,
-      routerConfig: appRouter,
+      routerConfig: _router,
     );
   }
 }
