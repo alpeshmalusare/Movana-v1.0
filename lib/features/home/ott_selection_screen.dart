@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/constants/app_assets.dart';
 import '../../core/theme/movana_theme.dart';
 
 class OttPlatform {
-  const OttPlatform(this.name, this.logoUrl, this.providerId);
+  const OttPlatform(this.name, this.logoUrl, this.providerId, {this.assetLogo});
   final String name;
   final String logoUrl;
   final int providerId;
+  final String? assetLogo;
 }
 
 const ottPlatforms = [
   OttPlatform('Netflix', 'https://image.tmdb.org/t/p/w300/pbpMk2JmcoNnQwx5JGpXngfoWtp.jpg', 8),
   OttPlatform('Prime Video', 'https://image.tmdb.org/t/p/w300/pvske1MyAoymrs5bguRfVqYiM9a.jpg', 119),
-  OttPlatform('JioHotstar', 'https://image.tmdb.org/t/p/w300/kVqjgpcwvDJOhCupjcLzwwtOp52.jpg', 2336),
+  OttPlatform('JioHotstar', 'https://image.tmdb.org/t/p/w300/kVqjgpcwvDJOhCupjcLzwwtOp52.jpg', 2336, assetLogo: AppAssets.jioHotstarLogo),
   OttPlatform('Sony LIV', 'https://image.tmdb.org/t/p/w300/3973zlBbBXdXxaWqRWzGG2GYxbT.jpg', 237),
   OttPlatform('ZEE5', 'https://image.tmdb.org/t/p/w300/gP67NRy1ShUJilrzMsbOmEmdmcv.jpg', 232),
   OttPlatform('Apple TV+', 'https://image.tmdb.org/t/p/w300/mcbz1LgtErU9p4UdbZ0rG6RTWHX.jpg', 350),
@@ -53,7 +55,13 @@ class OttSelectionScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(color: MovanaColors.card, borderRadius: BorderRadius.circular(20), border: Border.all(color: MovanaColors.divider), boxShadow: [BoxShadow(color: Colors.black.withOpacity(.25), blurRadius: 22, offset: const Offset(0, 10))]),
                         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          Expanded(child: Center(child: Image.network(platform.logoUrl, key: ValueKey('ott-logo-${platform.name}'), fit: BoxFit.contain))),
+                          Expanded(
+                            child: Center(
+                              child: platform.assetLogo == null
+                                  ? Image.network(platform.logoUrl, key: ValueKey('ott-logo-${platform.name}'), fit: BoxFit.contain)
+                                  : Image.asset(platform.assetLogo!, key: ValueKey('ott-logo-${platform.name}'), fit: BoxFit.contain),
+                            ),
+                          ),
                           const SizedBox(height: 10),
                           Text(platform.name, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w800)),
                         ]),

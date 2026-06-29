@@ -5,11 +5,12 @@ import './styles.css';
 
 const logo = '/assets/images/movana_logo.png';
 const icon = '/assets/images/movana_icon.png';
+const jioHotstarLogo = '/assets/images/jiohotstar_logo.png';
 
 const fallbackProviders = [
   { id: 8, name: 'Netflix', logoText: 'N' },
   { id: 119, name: 'Prime Video', logoText: 'prime' },
-  { id: 122, name: 'Disney+ Hotstar', logoText: 'hotstar' },
+  { id: 2336, name: 'JioHotstar', logo: jioHotstarLogo, logoText: 'hotstar' },
   { id: 237, name: 'Sony LIV', logoText: 'LIV' },
   { id: 232, name: 'ZEE5', logoText: 'ZEE5' },
   { id: 2, name: 'Apple TV+', logoText: 'tv+' },
@@ -54,8 +55,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => { const timer = setTimeout(() => setBoot(false), 1200); return () => clearTimeout(timer); }, []);
-  useEffect(() => { fetch('/api/tmdb/providers').then(r => r.json()).then(d => setProviders(d.providers?.length ? d.providers : fallbackProviders)).catch(() => setProviders(fallbackProviders)); }, []);
+  useEffect(() => { const timer = setTimeout(() => setBoot(false), 2500); return () => clearTimeout(timer); }, []);
+  useEffect(() => { fetch('/api/tmdb/providers').then(r => r.json()).then(d => setProviders(patchProviderLogos(d.providers?.length ? d.providers : fallbackProviders))).catch(() => setProviders(fallbackProviders)); }, []);
 
   useEffect(() => {
     if (!contentType) return;
@@ -125,7 +126,8 @@ function App() {
 }
 
 function mergeKnown(prev, items) { const next = {...prev}; (items || []).forEach(item => { if (item?.id) next[item.id] = item; }); return next; }
-function Splash() { return <div className="splash"><img src={logo} alt="Movana"/><h1>Stop Scrolling,<br/>Start Watching</h1><div className="loader">Loading...</div></div>; }
+function patchProviderLogos(items) { return (items || []).map(p => /hotstar|jio/i.test(`${p.name} ${p.tmdbName || ''}`) ? {...p, id: p.id || 2336, name: 'JioHotstar', logo: jioHotstarLogo} : p); }
+function Splash() { return <div className="splash cinematic-splash" data-testid="cinematic-splash-screen"><div className="splash-vignette"/><div className="cinematic-mark" data-testid="splash-cinematic-m-logo"><span>M</span><i/></div><div className="splash-blackout"/></div>; }
 function Login({ onEnter }) { return <div className="login" data-testid="login-screen"><img src={logo} alt="Movana"/><button data-testid="google-login" onClick={onEnter}>Continue with Google</button><button data-testid="guest-login" className="secondary" onClick={onEnter}>Continue as Guest</button><footer>Privacy Policy · Terms & Conditions</footer></div>; }
 function BackButton({ onClick }) { return <button className="icon-back" data-testid="back-button" onClick={onClick}><ChevronLeft size={28}/></button>; }
 

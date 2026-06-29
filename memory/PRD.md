@@ -84,3 +84,9 @@ Build Movana, a production-ready Flutter Android/iOS OTT movie and series discov
 - Share Theatre now generates a Movana-branded PNG share card in preview and Flutter uses native `shareXFiles` image sharing.
 - Genre artwork is unique: backend dynamically fetches/cache unique TMDB backdrops; Flutter fallback mapping now has unique backdrop URLs for all listed genres.
 - Restored `/app/frontend/.env` with `REACT_APP_BACKEND_URL=/api` for preview/test URL contract.
+
+## P0 Splash & JioHotstar Asset Update — 2026-06-29
+- Replaced the cropped JioHotstar provider logo in both Flutter and React preview with the uploaded uncropped PNG asset at `assets/images/jiohotstar_logo.png` and `frontend/public/assets/images/jiohotstar_logo.png`.
+- Added the new Flutter asset constant and registered it in `pubspec.yaml`; Flutter OTT cards now render the local JioHotstar asset with `BoxFit.contain`.
+- Rebuilt the Movana splash as a cinematic Netflix-style sequence in Flutter and React preview: gold “M” mark, glow halo, light sweep, smooth zoom to black, and automatic transition to login.
+- Validation completed: React lint passed, Vite production build passed, local backend/frontend health checks returned 200, screenshot smoke test confirmed splash transition and JioHotstar logo visibility. Flutter/Dart CLI is not installed in this container, so Flutter runtime analysis could not be executed; static build-safe checks passed.
